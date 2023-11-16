@@ -1,0 +1,919 @@
+{
+  "name": "miaomiao_ble",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [
+    ".eide/deps"
+  ],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": [
+      {
+        "name": "::CMSIS",
+        "files": [],
+        "folders": []
+      },
+      {
+        "name": "::Device",
+        "files": [
+          {
+            "path": "RTE/Device/nRF52832_xxAA/arm_startup_nrf52.s"
+          },
+          {
+            "path": "RTE/Device/nRF52832_xxAA/system_nrf52.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "Application",
+        "files": [
+          {
+            "path": "../../../main.c"
+          },
+          {
+            "path": "../config/sdk_config.h"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "Board Definition",
+        "files": [
+          {
+            "path": "../../../../../../components/boards/boards.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "Board Support",
+        "files": [
+          {
+            "path": "../../../../../../components/libraries/bsp/bsp_btn_ble.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/bsp/bsp.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_BLE",
+        "files": [
+          {
+            "path": "../../../../../../components/ble/ble_advertising/ble_advertising.c"
+          },
+          {
+            "path": "../../../../../../components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c"
+          },
+          {
+            "path": "../../../../../../components/ble/common/ble_advdata.c"
+          },
+          {
+            "path": "../../../../../../components/ble/common/ble_conn_params.c"
+          },
+          {
+            "path": "../../../../../../components/ble/common/ble_conn_state.c"
+          },
+          {
+            "path": "../../../../../../components/ble/common/ble_srv_common.c"
+          },
+          {
+            "path": "../../../../../../components/ble/nrf_ble_gatt/nrf_ble_gatt.c"
+          },
+          {
+            "path": "../../../../../../components/ble/nrf_ble_qwr/nrf_ble_qwr.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/auth_status_tracker.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/gatt_cache_manager.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/gatts_cache_manager.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/id_manager.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/peer_data_storage.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/peer_database.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/peer_id.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/peer_manager_handler.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/peer_manager.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/pm_buffer.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/security_dispatcher.c"
+          },
+          {
+            "path": "../../../../../../components/ble/peer_manager/security_manager.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_BLE_Services",
+        "files": [
+          {
+            "path": "../../../../../../components/ble/ble_services/cus_drs/cus_drs.c"
+          },
+          {
+            "path": "../../../../../../components/ble/ble_services/cus_errs/cus_errs.c"
+          },
+          {
+            "path": "../../../../../../components/ble/ble_services/cus_tss/cus_tss.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_DFU",
+        "files": [
+          {
+            "path": "../../../../../../components/ble/ble_services/ble_dfu/ble_dfu_bonded.c"
+          },
+          {
+            "path": "../../../../../../components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c"
+          },
+          {
+            "path": "../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_Drivers",
+        "files": [
+          {
+            "path": "../../../../../../integration/nrfx/legacy/nrf_drv_clock.c"
+          },
+          {
+            "path": "../../../../../../integration/nrfx/legacy/nrf_drv_spi.c"
+          },
+          {
+            "path": "../../../../../../integration/nrfx/legacy/nrf_drv_uart.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_clock.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_spi.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_spim.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_uart.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_uarte.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/prs/nrfx_prs.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/soc/nrfx_atomic.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_Libraries",
+        "files": [
+          {
+            "path": "../../../../../../components/libraries/atomic_fifo/nrf_atfifo.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/atomic_flags/nrf_atflags.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/atomic/nrf_atomic.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/balloc/nrf_balloc.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/button/app_button.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/crc16/crc16.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/experimental_section_vars/nrf_section_iter.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/fds/fds.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/fifo/app_fifo.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/fstorage/nrf_fstorage_sd.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/fstorage/nrf_fstorage.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/hardfault/hardfault_implementation.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/memobj/nrf_memobj.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/ringbuf/nrf_ringbuf.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/scheduler/app_scheduler.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/sensorsim/sensorsim.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/sortlist/nrf_sortlist.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/strerror/nrf_strerror.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/timer/app_timer2.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/timer/drv_rtc.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/uart/app_uart_fifo.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/util/app_error_handler_keil.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/util/app_error_weak.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/util/app_error.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/util/app_util_platform.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/util/nrf_assert.c"
+          },
+          {
+            "path": "../../../../../../external/fprintf/nrf_fprintf_format.c"
+          },
+          {
+            "path": "../../../../../../external/fprintf/nrf_fprintf.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_Log",
+        "files": [
+          {
+            "path": "../../../../../../components/libraries/log/src/nrf_log_backend_rtt.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/log/src/nrf_log_backend_serial.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/log/src/nrf_log_backend_uart.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/log/src/nrf_log_default_backends.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/log/src/nrf_log_frontend.c"
+          },
+          {
+            "path": "../../../../../../components/libraries/log/src/nrf_log_str_formatter.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_Segger_RTT",
+        "files": [
+          {
+            "path": "../../../../../../external/segger_rtt/SEGGER_RTT.c"
+          },
+          {
+            "path": "../../../../../../external/segger_rtt/SEGGER_RTT_Syscalls_KEIL.c"
+          },
+          {
+            "path": "../../../../../../external/segger_rtt/SEGGER_RTT_printf.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_SoftDevice",
+        "files": [
+          {
+            "path": "../../../../../../components/softdevice/common/nrf_sdh_ble.c"
+          },
+          {
+            "path": "../../../../../../components/softdevice/common/nrf_sdh_soc.c"
+          },
+          {
+            "path": "../../../../../../components/softdevice/common/nrf_sdh.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "nRF_svc",
+        "files": [
+          {
+            "path": "../../../../../../components/libraries/bootloader/dfu/nrf_dfu_svci.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "UTF8",
+        "files": [],
+        "folders": [
+          {
+            "name": "UTF16 converter",
+            "files": [
+              {
+                "path": "../../../../../../external/utf_converter/utf.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
+      }
+    ]
+  },
+  "outDir": "_build",
+  "deviceName": "nRF52832_xxAA",
+  "packDir": ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1",
+  "miscInfo": {
+    "uid": "ad65d71174dfb26f8283c1cd4802aa2e"
+  },
+  "targets": {
+    "nrf52832_xxaa": {
+      "excludeList": [
+        "<virtual_root>/nRF_BLE_Services/ble_nus.c"
+      ],
+      "toolchain": "AC5",
+      "compileConfig": {
+        "cpuType": "Cortex-M4",
+        "floatingPointHardware": "single",
+        "scatterFilePath": "",
+        "useCustomScatterFile": false,
+        "storageLayout": {
+          "RAM": [
+            {
+              "tag": "RAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x20002290",
+                "size": "0xdd70"
+              },
+              "isChecked": true,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            }
+          ],
+          "ROM": [
+            {
+              "tag": "ROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "IROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x26000",
+                "size": "0x5a000"
+              },
+              "isChecked": true,
+              "isStartup": true
+            },
+            {
+              "tag": "IROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            }
+          ]
+        },
+        "options": "null"
+      },
+      "uploader": "JLink",
+      "uploadConfig": {
+        "bin": "",
+        "baseAddr": "",
+        "cpuInfo": {
+          "vendor": "Nordic Semi",
+          "cpuName": "nRF52832_xxAA"
+        },
+        "proType": 1,
+        "speed": 4000,
+        "otherCmds": ""
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "Nordic Semi",
+            "cpuName": "nRF52832_xxAA"
+          },
+          "proType": 1,
+          "speed": 4000,
+          "otherCmds": ""
+        },
+        "OpenOCD": {
+          "bin": "",
+          "target": "nrf52",
+          "interface": "cmsis-dap",
+          "baseAddr": "0x08000000"
+        },
+        "pyOCD": {
+          "bin": "",
+          "targetName": "cortex_m",
+          "baseAddr": "0x08000000",
+          "speed": "4M",
+          "config": ".eide/nrf52832_xxaa.pyocd.yaml"
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "../../../config",
+          "../../../../../../components",
+          "../../../../../../components/ble/ble_advertising",
+          "../../../../../../components/ble/ble_dtm",
+          "../../../../../../components/ble/ble_racp",
+          "../../../../../../components/ble/ble_services/ble_ancs_c",
+          "../../../../../../components/ble/ble_services/ble_ans_c",
+          "../../../../../../components/ble/ble_services/ble_bas",
+          "../../../../../../components/ble/ble_services/ble_bas_c",
+          "../../../../../../components/ble/ble_services/ble_cscs",
+          "../../../../../../components/ble/ble_services/ble_cts_c",
+          "../../../../../../components/ble/ble_services/ble_dfu",
+          "../../../../../../components/ble/ble_services/ble_dis",
+          "../../../../../../components/ble/ble_services/ble_gls",
+          "../../../../../../components/ble/ble_services/ble_hids",
+          "../../../../../../components/ble/ble_services/ble_hrs",
+          "../../../../../../components/ble/ble_services/ble_hrs_c",
+          "../../../../../../components/ble/ble_services/ble_hts",
+          "../../../../../../components/ble/ble_services/ble_ias",
+          "../../../../../../components/ble/ble_services/ble_ias_c",
+          "../../../../../../components/ble/ble_services/ble_lbs",
+          "../../../../../../components/ble/ble_services/ble_lbs_c",
+          "../../../../../../components/ble/ble_services/ble_lls",
+          "../../../../../../components/ble/ble_services/ble_nus",
+          "../../../../../../components/ble/ble_services/ble_nus_c",
+          "../../../../../../components/ble/ble_services/ble_rscs",
+          "../../../../../../components/ble/ble_services/ble_rscs_c",
+          "../../../../../../components/ble/ble_services/ble_tps",
+          "../../../../../../components/ble/common",
+          "../../../../../../components/ble/nrf_ble_gatt",
+          "../../../../../../components/ble/nrf_ble_qwr",
+          "../../../../../../components/ble/peer_manager",
+          "../../../../../../components/boards",
+          "../../../../../../components/libraries/atomic",
+          "../../../../../../components/libraries/atomic_fifo",
+          "../../../../../../components/libraries/atomic_flags",
+          "../../../../../../components/libraries/balloc",
+          "../../../../../../components/libraries/bootloader/ble_dfu",
+          "../../../../../../components/libraries/bsp",
+          "../../../../../../components/libraries/button",
+          "../../../../../../components/libraries/cli",
+          "../../../../../../components/libraries/crc16",
+          "../../../../../../components/libraries/crc32",
+          "../../../../../../components/libraries/crypto",
+          "../../../../../../components/libraries/csense",
+          "../../../../../../components/libraries/csense_drv",
+          "../../../../../../components/libraries/delay",
+          "../../../../../../components/libraries/ecc",
+          "../../../../../../components/libraries/experimental_section_vars",
+          "../../../../../../components/libraries/experimental_task_manager",
+          "../../../../../../components/libraries/fds",
+          "../../../../../../components/libraries/fstorage",
+          "../../../../../../components/libraries/gfx",
+          "../../../../../../components/libraries/gpiote",
+          "../../../../../../components/libraries/hardfault",
+          "../../../../../../components/libraries/hci",
+          "../../../../../../components/libraries/led_softblink",
+          "../../../../../../components/libraries/log",
+          "../../../../../../components/libraries/log/src",
+          "../../../../../../components/libraries/low_power_pwm",
+          "../../../../../../components/libraries/mem_manager",
+          "../../../../../../components/libraries/memobj",
+          "../../../../../../components/libraries/mpu",
+          "../../../../../../components/libraries/mutex",
+          "../../../../../../components/libraries/pwm",
+          "../../../../../../components/libraries/pwr_mgmt",
+          "../../../../../../components/libraries/queue",
+          "../../../../../../components/libraries/ringbuf",
+          "../../../../../../components/libraries/scheduler",
+          "../../../../../../components/libraries/sdcard",
+          "../../../../../../components/libraries/sensorsim",
+          "../../../../../../components/libraries/slip",
+          "../../../../../../components/libraries/sortlist",
+          "../../../../../../components/libraries/spi_mngr",
+          "../../../../../../components/libraries/stack_guard",
+          "../../../../../../components/libraries/strerror",
+          "../../../../../../components/libraries/svc",
+          "../../../../../../components/libraries/timer",
+          "../../../../../../components/libraries/twi_mngr",
+          "../../../../../../components/libraries/twi_sensor",
+          "../../../../../../components/libraries/usbd",
+          "../../../../../../components/libraries/usbd/class/audio",
+          "../../../../../../components/libraries/usbd/class/cdc",
+          "../../../../../../components/libraries/usbd/class/cdc/acm",
+          "../../../../../../components/libraries/usbd/class/hid",
+          "../../../../../../components/libraries/usbd/class/hid/generic",
+          "../../../../../../components/libraries/usbd/class/hid/kbd",
+          "../../../../../../components/libraries/usbd/class/hid/mouse",
+          "../../../../../../components/libraries/usbd/class/msc",
+          "../../../../../../components/libraries/util",
+          "../../../../../../components/nfc/ndef/conn_hand_parser",
+          "../../../../../../components/nfc/ndef/conn_hand_parser/ac_rec_parser",
+          "../../../../../../components/nfc/ndef/conn_hand_parser/ble_oob_advdata_parser",
+          "../../../../../../components/nfc/ndef/conn_hand_parser/le_oob_rec_parser",
+          "../../../../../../components/nfc/ndef/connection_handover/ac_rec",
+          "../../../../../../components/nfc/ndef/connection_handover/ble_oob_advdata",
+          "../../../../../../components/nfc/ndef/connection_handover/ble_pair_lib",
+          "../../../../../../components/nfc/ndef/connection_handover/ble_pair_msg",
+          "../../../../../../components/nfc/ndef/connection_handover/common",
+          "../../../../../../components/nfc/ndef/connection_handover/ep_oob_rec",
+          "../../../../../../components/nfc/ndef/connection_handover/hs_rec",
+          "../../../../../../components/nfc/ndef/connection_handover/le_oob_rec",
+          "../../../../../../components/nfc/ndef/generic/message",
+          "../../../../../../components/nfc/ndef/generic/record",
+          "../../../../../../components/nfc/ndef/launchapp",
+          "../../../../../../components/nfc/ndef/parser/message",
+          "../../../../../../components/nfc/ndef/parser/record",
+          "../../../../../../components/nfc/ndef/text",
+          "../../../../../../components/nfc/ndef/uri",
+          "../../../../../../components/nfc/platform",
+          "../../../../../../components/nfc/t2t_lib",
+          "../../../../../../components/nfc/t2t_parser",
+          "../../../../../../components/nfc/t4t_lib",
+          "../../../../../../components/nfc/t4t_parser/apdu",
+          "../../../../../../components/nfc/t4t_parser/cc_file",
+          "../../../../../../components/nfc/t4t_parser/hl_detection_procedure",
+          "../../../../../../components/nfc/t4t_parser/tlv",
+          "../../../../../../components/softdevice/common",
+          "../../../../../../components/softdevice/s132/headers",
+          "../../../../../../components/softdevice/s132/headers/nrf52",
+          "../../../../../../external/fprintf",
+          "../../../../../../external/segger_rtt",
+          "../../../../../../external/utf_converter",
+          "../../../../../../integration/nrfx",
+          "../../../../../../integration/nrfx/legacy",
+          "../../../../../../modules/nrfx",
+          "../../../../../../modules/nrfx/drivers/include",
+          "../../../../../../modules/nrfx/hal",
+          "../config",
+          ".cmsis/include",
+          "RTE/_nrf52832_xxaa",
+          ".eide/deps",
+          "../../../../../../../../../../tool/Keil/Pack/NordicSemiconductor/nRF_DeviceFamilyPack/8.32.1/Device/Include",
+          "../../../../../../components/libraries/bootloader/dfu",
+          "../../../../../../components/libraries/bootloader",
+          "../../../../../../components/libraries/uart",
+          "../../../../../../components/ble/ble_link_ctx_manager",
+          "../../../../../../components/libraries/fifo",
+          "../../../../../../components/ble/ble_services/cus_drs",
+          "../../../../../../components/ble/ble_services/cus_errs",
+          "../../../../../../components/ble/ble_services/cus_tss"
+        ],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": [
+          "APP_TIMER_V2",
+          "APP_TIMER_V2_RTC1_ENABLED",
+          "BOARD_PCA10040",
+          "CONFIG_GPIO_AS_PINRESET",
+          "FLOAT_ABI_HARD",
+          "NRF52",
+          "NRF52832_XXAA",
+          "NRF52_PAN_74",
+          "NRF_SD_BLE_API_VERSION=7",
+          "S132",
+          "SOFTDEVICE_PRESENT",
+          "__HEAP_SIZE=8192",
+          "__STACK_SIZE=8192",
+          "NRF_DFU_TRANSPORT_BLE=1",
+          "BL_SETTINGS_ACCESS_ONLY"
+        ]
+      }
+    },
+    "flash_s132_nrf52_7.0.1_softdevice": {
+      "compileConfig": {
+        "cpuType": "Cortex-M4",
+        "floatingPointHardware": "single",
+        "scatterFilePath": "",
+        "useCustomScatterFile": false,
+        "storageLayout": {
+          "RAM": [
+            {
+              "tag": "RAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "RAM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x20002250",
+                "size": "0xddb0"
+              },
+              "isChecked": true,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "noInit": false
+            }
+          ],
+          "ROM": [
+            {
+              "tag": "ROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "ROM",
+              "id": 3,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            },
+            {
+              "tag": "IROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x26000",
+                "size": "0x5a000"
+              },
+              "isChecked": true,
+              "isStartup": true
+            },
+            {
+              "tag": "IROM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x0",
+                "size": "0x0"
+              },
+              "isChecked": false,
+              "isStartup": false
+            }
+          ]
+        },
+        "options": "null"
+      },
+      "uploader": "JLink",
+      "uploadConfig": {
+        "bin": "",
+        "baseAddr": "",
+        "cpuInfo": {
+          "vendor": "null",
+          "cpuName": "null"
+        },
+        "proType": 1,
+        "speed": 8000,
+        "otherCmds": ""
+      },
+      "uploadConfigMap": {},
+      "toolchain": "AC5",
+      "custom_dep": {
+        "name": "default",
+        "sourceDirList": [],
+        "libList": [],
+        "incList": [
+          "../../../config",
+          "../config",
+          ".cmsis/include",
+          "RTE/_flash_s132_nrf52_7.0.1_softdevice"
+        ],
+        "defineList": [
+          "__HEAP_SIZE=8192",
+          "__STACK_SIZE=8192"
+        ]
+      },
+      "excludeList": [
+        "<virtual_root>/Board Definition/boards.c",
+        "<virtual_root>/Board Support/bsp.c",
+        "<virtual_root>/Board Support/bsp_btn_ble.c",
+        "<virtual_root>/UTF8/UTF16 converter/utf.c",
+        "<virtual_root>/nRF_BLE/auth_status_tracker.c",
+        "<virtual_root>/nRF_BLE/ble_advdata.c",
+        "<virtual_root>/nRF_BLE/ble_advertising.c",
+        "<virtual_root>/nRF_BLE/ble_conn_params.c",
+        "<virtual_root>/nRF_BLE/ble_conn_state.c",
+        "<virtual_root>/nRF_BLE/ble_srv_common.c",
+        "<virtual_root>/nRF_BLE/gatt_cache_manager.c",
+        "<virtual_root>/nRF_BLE/gatts_cache_manager.c",
+        "<virtual_root>/nRF_BLE/id_manager.c",
+        "<virtual_root>/nRF_BLE/nrf_ble_gatt.c",
+        "<virtual_root>/nRF_BLE/nrf_ble_qwr.c",
+        "<virtual_root>/nRF_BLE/peer_data_storage.c",
+        "<virtual_root>/nRF_BLE/peer_database.c",
+        "<virtual_root>/nRF_BLE/peer_id.c",
+        "<virtual_root>/nRF_BLE/peer_manager.c",
+        "<virtual_root>/nRF_BLE/peer_manager_handler.c",
+        "<virtual_root>/nRF_BLE/pm_buffer.c",
+        "<virtual_root>/nRF_BLE/security_dispatcher.c",
+        "<virtual_root>/nRF_BLE/security_manager.c",
+        "<virtual_root>/nRF_Drivers/nrf_drv_clock.c",
+        "<virtual_root>/nRF_Drivers/nrf_drv_uart.c",
+        "<virtual_root>/nRF_Drivers/nrfx_atomic.c",
+        "<virtual_root>/nRF_Drivers/nrfx_clock.c",
+        "<virtual_root>/nRF_Drivers/nrfx_gpiote.c",
+        "<virtual_root>/nRF_Drivers/nrfx_prs.c",
+        "<virtual_root>/nRF_Drivers/nrfx_uart.c",
+        "<virtual_root>/nRF_Drivers/nrfx_uarte.c",
+        "<virtual_root>/nRF_Libraries/app_button.c",
+        "<virtual_root>/nRF_Libraries/app_error.c",
+        "<virtual_root>/nRF_Libraries/app_error_handler_keil.c",
+        "<virtual_root>/nRF_Libraries/app_error_weak.c",
+        "<virtual_root>/nRF_Libraries/app_scheduler.c",
+        "<virtual_root>/nRF_Libraries/app_timer2.c",
+        "<virtual_root>/nRF_Libraries/app_util_platform.c",
+        "<virtual_root>/nRF_Libraries/crc16.c",
+        "<virtual_root>/nRF_Libraries/drv_rtc.c",
+        "<virtual_root>/nRF_Libraries/fds.c",
+        "<virtual_root>/nRF_Libraries/hardfault_implementation.c",
+        "<virtual_root>/nRF_Libraries/nrf_assert.c",
+        "<virtual_root>/nRF_Libraries/nrf_atfifo.c",
+        "<virtual_root>/nRF_Libraries/nrf_atflags.c",
+        "<virtual_root>/nRF_Libraries/nrf_atomic.c",
+        "<virtual_root>/nRF_Libraries/nrf_balloc.c",
+        "<virtual_root>/nRF_Libraries/nrf_fprintf.c",
+        "<virtual_root>/nRF_Libraries/nrf_fprintf_format.c",
+        "<virtual_root>/nRF_Libraries/nrf_fstorage.c",
+        "<virtual_root>/nRF_Libraries/nrf_fstorage_sd.c",
+        "<virtual_root>/nRF_Libraries/nrf_memobj.c",
+        "<virtual_root>/nRF_Libraries/nrf_pwr_mgmt.c",
+        "<virtual_root>/nRF_Libraries/nrf_ringbuf.c",
+        "<virtual_root>/nRF_Libraries/nrf_section_iter.c",
+        "<virtual_root>/nRF_Libraries/nrf_sortlist.c",
+        "<virtual_root>/nRF_Libraries/nrf_strerror.c",
+        "<virtual_root>/nRF_Libraries/sensorsim.c",
+        "<virtual_root>/nRF_Log/nrf_log_backend_rtt.c",
+        "<virtual_root>/nRF_Log/nrf_log_backend_serial.c",
+        "<virtual_root>/nRF_Log/nrf_log_backend_uart.c",
+        "<virtual_root>/nRF_Log/nrf_log_default_backends.c",
+        "<virtual_root>/nRF_Log/nrf_log_frontend.c",
+        "<virtual_root>/nRF_Log/nrf_log_str_formatter.c",
+        "<virtual_root>/nRF_Segger_RTT/SEGGER_RTT.c",
+        "<virtual_root>/nRF_Segger_RTT/SEGGER_RTT_Syscalls_KEIL.c",
+        "<virtual_root>/nRF_Segger_RTT/SEGGER_RTT_printf.c",
+        "<virtual_root>/nRF_SoftDevice/nrf_sdh.c",
+        "<virtual_root>/nRF_SoftDevice/nrf_sdh_ble.c",
+        "<virtual_root>/nRF_SoftDevice/nrf_sdh_soc.c",
+        "<virtual_root>/::CMSIS",
+        "<virtual_root>/::Device"
+      ]
+    }
+  },
+  "version": "3.3"
+}
