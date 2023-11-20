@@ -33,10 +33,74 @@
             "path": "../../../main.c"
           },
           {
+            "path": "../../../nfcv_worker.c"
+          },
+          {
             "path": "../config/sdk_config.h"
           }
         ],
-        "folders": []
+        "folders": [
+          {
+            "name": "RFAL",
+            "files": [
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_analogConfig.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_crc.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_iso15693_2.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_isoDep.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_nfca.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcb.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcDep.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcf.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcv.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_rfst25r3911.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_st25tb.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/rfal/Src/rfal_t1t.c"
+              }
+            ],
+            "folders": []
+          },
+          {
+            "name": "ST25R3911",
+            "files": [
+              {
+                "path": "../../../../../../components/ST25R3911/st25r3911_com.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/st25r3911_interrupt.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/st25r3911.c"
+              },
+              {
+                "path": "../../../../../../components/ST25R3911/timer.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
       },
       {
         "name": "Board Definition",
@@ -162,6 +226,9 @@
             "path": "../../../../../../integration/nrfx/legacy/nrf_drv_clock.c"
           },
           {
+            "path": "../../../../../../integration/nrfx/legacy/nrf_drv_power.c"
+          },
+          {
             "path": "../../../../../../integration/nrfx/legacy/nrf_drv_spi.c"
           },
           {
@@ -172,6 +239,9 @@
           },
           {
             "path": "../../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_rtc.c"
           },
           {
             "path": "../../../../../../modules/nrfx/drivers/src/nrfx_spi.c"
@@ -665,7 +735,7 @@
           ".cmsis/include",
           "RTE/_nrf52832_xxaa",
           ".eide/deps",
-          "../../../../../../../../../../tool/Keil/Pack/NordicSemiconductor/nRF_DeviceFamilyPack/8.32.1/Device/Include",
+          "../../../../../../../../../tool/Keil/Pack/NordicSemiconductor/nRF_DeviceFamilyPack/8.32.1/Device/Include",
           "../../../../../../components/libraries/bootloader/dfu",
           "../../../../../../components/libraries/bootloader",
           "../../../../../../components/libraries/uart",
@@ -673,7 +743,9 @@
           "../../../../../../components/libraries/fifo",
           "../../../../../../components/ble/ble_services/cus_drs",
           "../../../../../../components/ble/ble_services/cus_errs",
-          "../../../../../../components/ble/ble_services/cus_tss"
+          "../../../../../../components/ble/ble_services/cus_tss",
+          "../../../../../../components/ST25R3911",
+          "../../../../../../components/ST25R3911/rfal/Inc"
         ],
         "libList": [],
         "sourceDirList": [],

@@ -1,5 +1,21 @@
---cpu Cortex-M4.fp --library_type=microlib --scatter "d:/work_file/project_file/miaomiao/miaomiao_ble/examples/ble_peripheral/miaomiao_ble/pca10040/s132/arm5_no_packs/_build/nrf52832_xxaa/miaomiao_ble.sct" --diag_suppress 6330 --strict --summary_stderr --info summarysizes --map --xref --callgraph --symbols --info sizes --info totals --info unused --info veneers
+--cpu Cortex-M4.fp --library_type=microlib --scatter "d:/work_file/github_project/miaomiao_ble/examples/ble_peripheral/miaomiao_ble/pca10040/s132/arm5_no_packs/_build/nrf52832_xxaa/miaomiao_ble.sct" --diag_suppress 6330 --strict --summary_stderr --info summarysizes --map --xref --callgraph --symbols --info sizes --info totals --info unused --info veneers
 --list .\_build\nrf52832_xxaa\miaomiao_ble.map
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_analogConfig.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_crc.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_iso15693_2.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_isoDep.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_nfcDep.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_nfca.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_nfcb.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_nfcf.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_nfcv.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_rfst25r3911.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_st25tb.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\rfal\Src\rfal_t1t.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\st25r3911.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\st25r3911_com.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\st25r3911_interrupt.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ST25R3911\timer.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ble\ble_advertising\ble_advertising.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ble\ble_link_ctx_manager\ble_link_ctx_manager.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\components\ble\ble_services\ble_dfu\ble_dfu.o
@@ -73,10 +89,12 @@
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\external\segger_rtt\SEGGER_RTT_printf.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\external\utf_converter\utf.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\integration\nrfx\legacy\nrf_drv_clock.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\integration\nrfx\legacy\nrf_drv_power.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\integration\nrfx\legacy\nrf_drv_spi.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\integration\nrfx\legacy\nrf_drv_uart.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_clock.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_gpiote.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_rtc.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_spi.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_spim.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_uart.o
@@ -84,5 +102,6 @@
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\prs\nrfx_prs.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\soc\nrfx_atomic.o
 .\_build\nrf52832_xxaa\__\__\__\main.o
+.\_build\nrf52832_xxaa\__\__\__\nfcv_worker.o
 .\_build\nrf52832_xxaa\RTE\Device\nRF52832_xxAA\arm_startup_nrf52.o
 .\_build\nrf52832_xxaa\RTE\Device\nRF52832_xxAA\system_nrf52.o -o .\_build\nrf52832_xxaa\miaomiao_ble.axf

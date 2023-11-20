@@ -7,7 +7,7 @@
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 16,
-    "rootDir": "d:\\work_file\\project_file\\miaomiao\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
+    "rootDir": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
     "dumpPath": "_build\\nrf52832_xxaa",
     "outDir": "_build\\nrf52832_xxaa",
     "ram": 56688,
@@ -145,7 +145,7 @@
         ".cmsis/include",
         "RTE/_nrf52832_xxaa",
         ".eide/deps",
-        "../../../../../../../../../../tool/Keil/Pack/NordicSemiconductor/nRF_DeviceFamilyPack/8.32.1/Device/Include",
+        "../../../../../../../../../tool/Keil/Pack/NordicSemiconductor/nRF_DeviceFamilyPack/8.32.1/Device/Include",
         "../../../../../../components/libraries/bootloader/dfu",
         "../../../../../../components/libraries/bootloader",
         "../../../../../../components/libraries/uart",
@@ -153,7 +153,9 @@
         "../../../../../../components/libraries/fifo",
         "../../../../../../components/ble/ble_services/cus_drs",
         "../../../../../../components/ble/ble_services/cus_errs",
-        "../../../../../../components/ble/ble_services/cus_tss"
+        "../../../../../../components/ble/ble_services/cus_tss",
+        "../../../../../../components/ST25R3911",
+        "../../../../../../components/ST25R3911/rfal/Inc"
     ],
     "libDirs": [],
     "defines": [
@@ -174,6 +176,22 @@
         "BL_SETTINGS_ACCESS_ONLY"
     ],
     "sourceList": [
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_analogConfig.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_crc.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_iso15693_2.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_isoDep.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcDep.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_nfca.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcb.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcf.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_nfcv.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_rfst25r3911.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_st25tb.c",
+        "../../../../../../components/ST25R3911/rfal/Src/rfal_t1t.c",
+        "../../../../../../components/ST25R3911/st25r3911.c",
+        "../../../../../../components/ST25R3911/st25r3911_com.c",
+        "../../../../../../components/ST25R3911/st25r3911_interrupt.c",
+        "../../../../../../components/ST25R3911/timer.c",
         "../../../../../../components/ble/ble_advertising/ble_advertising.c",
         "../../../../../../components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c",
         "../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.c",
@@ -247,10 +265,12 @@
         "../../../../../../external/segger_rtt/SEGGER_RTT_printf.c",
         "../../../../../../external/utf_converter/utf.c",
         "../../../../../../integration/nrfx/legacy/nrf_drv_clock.c",
+        "../../../../../../integration/nrfx/legacy/nrf_drv_power.c",
         "../../../../../../integration/nrfx/legacy/nrf_drv_spi.c",
         "../../../../../../integration/nrfx/legacy/nrf_drv_uart.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_clock.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c",
+        "../../../../../../modules/nrfx/drivers/src/nrfx_rtc.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_spi.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_spim.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_uart.c",
@@ -258,6 +278,7 @@
         "../../../../../../modules/nrfx/drivers/src/prs/nrfx_prs.c",
         "../../../../../../modules/nrfx/soc/nrfx_atomic.c",
         "../../../main.c",
+        "../../../nfcv_worker.c",
         "RTE/Device/nRF52832_xxAA/arm_startup_nrf52.s",
         "RTE/Device/nRF52832_xxAA/system_nrf52.c"
     ],
@@ -298,20 +319,20 @@
             "rw-base": "0x20000000",
             "misc-controls": "--diag_suppress 6330",
             "link-scatter": [
-                "\"d:/work_file/project_file/miaomiao/miaomiao_ble/examples/ble_peripheral/miaomiao_ble/pca10040/s132/arm5_no_packs/_build/nrf52832_xxaa/miaomiao_ble.sct\""
+                "\"d:/work_file/github_project/miaomiao_ble/examples/ble_peripheral/miaomiao_ble/pca10040/s132/arm5_no_packs/_build/nrf52832_xxaa/miaomiao_ble.sct\""
             ]
         }
     },
     "env": {
-        "workspaceFolder": "d:\\work_file\\project_file\\miaomiao\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
+        "workspaceFolder": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
         "workspaceFolderBasename": "arm5_no_packs",
-        "OutDir": "d:\\work_file\\project_file\\miaomiao\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa",
+        "OutDir": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa",
         "OutDirRoot": "_build",
         "OutDirBase": "_build\\nrf52832_xxaa",
         "ProjectName": "miaomiao_ble",
         "ConfigName": "nrf52832_xxaa",
-        "ProjectRoot": "d:\\work_file\\project_file\\miaomiao\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
-        "ExecutableName": "d:\\work_file\\project_file\\miaomiao\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa\\miaomiao_ble",
+        "ProjectRoot": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
+        "ExecutableName": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa\\miaomiao_ble",
         "SYS_Platform": "win32",
         "SYS_DirSep": "\\",
         "SYS_DirSeparator": "\\",
@@ -327,6 +348,6 @@
         "global": "3ae75cac734e7a166338bea4b35ae2e0",
         "c/cpp-compiler": "f9f4c3f9bb011c675a08e5dfc3f15fa1",
         "asm-compiler": "55ae5b272029e76e92390604f936f0b1",
-        "linker": "57e4bc6805294be8df0c18985f66a532"
+        "linker": "374a5198e1f5dc98f2658b2b3599e717"
     }
 }

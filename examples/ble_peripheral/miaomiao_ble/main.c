@@ -85,10 +85,17 @@
 #include "cus_drs.h"
 #include "cus_errs.h"
 #include "cus_tss.h"
+#include "nrf_drv_clock.h"
+#include "nrf_drv_rtc.h"
+#include "nrf_drv_spi.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+
+#include "rfal_rf.h"
+#include "rfal_analogConfig.h"
+#include "nfcv_worker.h"
 
 #define DEVICE_NAME "miaomiao3_"                           /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME "NordicSemiconductor"            /**< Manufacturer. Will be passed to Device Information Service. */
@@ -118,6 +125,7 @@
 
 #define DEAD_BEEF 0xDEADBEEF /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+#define SPI_INSTANCE 0
 // #define UART_TX_BUF_SIZE 256 /**< UART TX buffer size. */
 // #define UART_RX_BUF_SIZE 256 /**< UART RX buffer size. */
 
@@ -133,17 +141,47 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID; /**< Handle of the curr
 /* YOUR_JOB: Declare all services structure your application is using
  *  BLE_XYZ_DEF(m_xyz);
  */
-
+static volatile bool spi_xfer_done;
+const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(0);
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 // static ble_uuid_t m_adv_uuids[] = /**< Universally unique service identifiers. */
 //     {
 //         {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE},
 // };
+static const nrf_drv_spi_t m_spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);
 
 uint32_t cur_TZ = 0;
 
 static void advertising_start(bool erase_bonds);
 
+void spi_event_handler(nrf_drv_spi_evt_t const *p_event, void *p_context)
+{
+    spi_xfer_done = true;
+}
+
+static void hal_spi_init(void)
+{
+    nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG;
+    spi_config.ss_pin = SPIM0_SS_PIN;
+    spi_config.miso_pin = SPIM0_MISO_PIN;
+    spi_config.mosi_pin = SPIM0_MOSI_PIN;
+    spi_config.sck_pin = SPIM0_SCK_PIN;
+    APP_ERROR_CHECK(nrf_drv_spi_init(&m_spi, &spi_config, spi_event_handler, NULL));
+}
+
+uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
+{
+    uint8_t tx[256];
+    uint8_t rx[256];
+    if (txData != NULL)
+    {
+        memcpy(tx, txData, len);
+    }
+    APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, (rxData != NULL) ? rxData : rx, len));
+    while (!spi_xfer_done)
+        ;
+    return 0;
+}
 /**@brief Callback function for asserts in the SoftDevice.
  *
  * @details This function will be called in case of an assert in the SoftDevice.
@@ -278,6 +316,39 @@ static void timers_init(void)
        APP_ERROR_CHECK(err_code); */
     err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
     APP_ERROR_CHECK(err_code);
+}
+
+uint32_t my_systick = 0;
+static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
+{
+    if (int_type == NRF_DRV_RTC_INT_TICK)
+    {
+        my_systick++;
+    }
+}
+
+uint32_t get_sysTick(void)
+{
+    return my_systick;
+}
+
+static void lfclk_config(void)
+{
+    ret_code_t err_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(err_code);
+    nrf_drv_clock_lfclk_request(NULL);
+}
+
+static void rtc_config(void)
+{
+    uint32_t err_code;
+
+    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
+    err_code = nrf_drv_rtc_init(&m_rtc, &config, rtc_handler);
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_rtc_tick_enable(&m_rtc, true);
+    nrf_drv_rtc_enable(&m_rtc);
 }
 
 /**@brief Function for the GAP initialization.
@@ -952,6 +1023,9 @@ int main(void)
     // Initialize.
     log_init();
     timers_init();
+    // lfclk_config();
+    // rtc_config();
+    // hal_spi_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
@@ -962,6 +1036,15 @@ int main(void)
     conn_params_init();
     peer_manager_init();
 
+    // rfalAnalogConfigInitialize();
+    // if (rfalInitialize() != ERR_NONE)
+    // {
+    //     platformLog("RFAL initialization failed..\r\n");
+    // }
+    // else
+    // {
+    //     platformLog("RFAL initialization succeeded..\r\n");
+    // }
     // Start execution.
     NRF_LOG_INFO("miaomiao3 device started.");
     application_timers_start();
@@ -972,6 +1055,8 @@ int main(void)
     for (;;)
     {
         idle_state_handle();
+        // rfalWorker();
+        // workCycle();
     }
 }
 
