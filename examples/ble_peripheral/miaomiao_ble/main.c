@@ -1060,7 +1060,7 @@ int main(void)
     application_timers_start();
 
     advertising_start(erase_bonds);
-    
+
     rfalAnalogConfigInitialize();
     if (rfalInitialize() != ERR_NONE)
     {
@@ -1076,7 +1076,7 @@ int main(void)
     {
         idle_state_handle();
         rfalWorker();
-        // workCycle();
+        workCycle();
     }
 }
 
