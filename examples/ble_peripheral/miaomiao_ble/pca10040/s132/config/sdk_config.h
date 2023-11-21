@@ -1201,7 +1201,7 @@
 // <q> BLE_DFU_ENABLED  - Enable DFU Service.
 
 #ifndef BLE_DFU_ENABLED
-#define BLE_DFU_ENABLED 1
+#define BLE_DFU_ENABLED 0
 #endif
 
 // <q> NRF_DFU_BLE_BUTTONLESS_SUPPORTS_BONDS  - Buttonless DFU supports bonds.

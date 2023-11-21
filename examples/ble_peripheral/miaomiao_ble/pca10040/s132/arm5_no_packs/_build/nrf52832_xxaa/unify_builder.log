@@ -3088,3 +3088,85 @@ command:
 [2023-11-20 17:01:24]	[done]
 	build successfully !
 
+[2023-11-21 09:46:21]	[done]
+	build successfully !
+
+[2023-11-21 10:01:15]	[done]
+	build successfully !
+
+[2023-11-21 10:18:12]	[done]
+	build successfully !
+
+[2023-11-21 10:22:02]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol fds_gc (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol fds_stat (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol pm_conn_sec_status_get (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol pm_conn_secure (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol pm_peer_delete (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol pm_peer_rank_highest (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol pm_peer_ranks_get (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol pm_sec_is_sufficient (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol pm_conn_sec_config_reply (referred from main.o).
+Error: L6218E: Undefined symbol pm_init (referred from main.o).
+Error: L6218E: Undefined symbol pm_peers_delete (referred from main.o).
+Error: L6218E: Undefined symbol pm_register (referred from main.o).
+Error: L6218E: Undefined symbol pm_sec_params_set (referred from main.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 13 error messages.
+
+
+[2023-11-21 10:24:28]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol fds_file_delete (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_init (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_close (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_delete (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_find (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_find_by_key (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_find_in_file (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_id_from_desc (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_open (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_update (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_record_write (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_register (referred from peer_data_storage.o).
+Error: L6218E: Undefined symbol fds_gc (referred from peer_manager_handler.o).
+Error: L6218E: Undefined symbol fds_stat (referred from peer_manager_handler.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 14 error messages.
+
+
+[2023-11-21 10:25:09]	[done]
+	build successfully !
+
+[2023-11-21 10:25:41]	[done]
+	build successfully !
+
+[2023-11-21 10:25:51]	[done]
+	build successfully !
+
+[2023-11-21 10:30:10]	[done]
+	build successfully !
+
+[2023-11-21 11:27:36]	[done]
+	build successfully !
+
+[2023-11-21 13:26:00]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol get_sysTick (referred from timer.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 1 error messages.
+
+
+[2023-11-21 13:26:18]	[done]
+	build successfully !
+
+[2023-11-21 13:29:41]	[done]
+	build successfully !
+
+[2023-11-21 15:59:29]	[done]
+	build successfully !
+

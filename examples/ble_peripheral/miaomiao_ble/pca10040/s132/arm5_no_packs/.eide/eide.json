@@ -241,6 +241,9 @@
             "path": "../../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c"
           },
           {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_power_clock.c"
+          },
+          {
             "path": "../../../../../../modules/nrfx/drivers/src/nrfx_rtc.c"
           },
           {

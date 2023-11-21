@@ -1,6 +1,6 @@
 r
 halt
-loadfile "d:\work_file\project_file\miaomiao\miaomiao_ble\examples\ble_peripheral\miaomiao_ble\pca10040\s132\arm5_no_packs\_build\nrf52832_xxaa\miaomiao_ble.hex"
+loadfile "d:\work_file\github_project\miaomiao_ble\examples\ble_peripheral\miaomiao_ble\pca10040\s132\arm5_no_packs\_build\nrf52832_xxaa\miaomiao_ble.hex"
 r
 go
 exit

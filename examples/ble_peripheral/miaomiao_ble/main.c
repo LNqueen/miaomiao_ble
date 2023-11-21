@@ -166,6 +166,7 @@ static void hal_spi_init(void)
     spi_config.miso_pin = SPIM0_MISO_PIN;
     spi_config.mosi_pin = SPIM0_MOSI_PIN;
     spi_config.sck_pin = SPIM0_SCK_PIN;
+    spi_config.mode = NRF_DRV_SPI_MODE_3;
     APP_ERROR_CHECK(nrf_drv_spi_init(&m_spi, &spi_config, spi_event_handler, NULL));
 }
 
@@ -177,6 +178,7 @@ uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
     {
         memcpy(tx, txData, len);
     }
+    spi_xfer_done = false;
     APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, (rxData != NULL) ? rxData : rx, len));
     while (!spi_xfer_done)
         ;
@@ -299,6 +301,16 @@ static void timer_timeout_handler(void *p_context)
     UNUSED_PARAMETER(p_context);
     time_update();
 }
+
+APP_TIMER_DEF(m_systick_id);
+#define TIME_SYSTICK_INTERVAL APP_TIMER_TICKS(1)
+uint32_t my_systick = 0;
+
+static void systick_timeout_handler(void *p_context)
+{
+    UNUSED_PARAMETER(p_context);
+    my_systick++;
+}
 static void timers_init(void)
 {
     // Initialize timer module.
@@ -316,40 +328,41 @@ static void timers_init(void)
        APP_ERROR_CHECK(err_code); */
     err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
     APP_ERROR_CHECK(err_code);
+    err_code = app_timer_create(&m_systick_id, APP_TIMER_MODE_REPEATED, systick_timeout_handler);
+    APP_ERROR_CHECK(err_code);
 }
 
-uint32_t my_systick = 0;
-static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
-{
-    if (int_type == NRF_DRV_RTC_INT_TICK)
-    {
-        my_systick++;
-    }
-}
+// static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
+// {
+//     if (int_type == NRF_DRV_RTC_INT_TICK)
+//     {
+//         my_systick++;
+//     }
+// }
 
 uint32_t get_sysTick(void)
 {
     return my_systick;
 }
 
-static void lfclk_config(void)
-{
-    ret_code_t err_code = nrf_drv_clock_init();
-    APP_ERROR_CHECK(err_code);
-    nrf_drv_clock_lfclk_request(NULL);
-}
+// static void lfclk_config(void)
+// {
+//     ret_code_t err_code = nrf_drv_clock_init();
+//     APP_ERROR_CHECK(err_code);
+//     nrf_drv_clock_lfclk_request(NULL);
+// }
 
-static void rtc_config(void)
-{
-    uint32_t err_code;
+// static void rtc_config(void)
+// {
+//     uint32_t err_code;
 
-    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
-    err_code = nrf_drv_rtc_init(&m_rtc, &config, rtc_handler);
-    APP_ERROR_CHECK(err_code);
+//     nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
+//     err_code = nrf_drv_rtc_init(&m_rtc, &config, rtc_handler);
+//     APP_ERROR_CHECK(err_code);
 
-    nrf_drv_rtc_tick_enable(&m_rtc, true);
-    nrf_drv_rtc_enable(&m_rtc);
-}
+//     nrf_drv_rtc_tick_enable(&m_rtc, true);
+//     nrf_drv_rtc_enable(&m_rtc);
+// }
 
 /**@brief Function for the GAP initialization.
  *
@@ -438,6 +451,7 @@ static void on_yys_evt(ble_yy_service_t     * p_yy_service,
 }
 */
 
+#if (BLE_DFU_ENABLED == 1)
 static void ble_dfu_evt_handler(ble_dfu_buttonless_evt_type_t event)
 {
     switch (event)
@@ -472,6 +486,7 @@ static void ble_dfu_evt_handler(ble_dfu_buttonless_evt_type_t event)
         break;
     }
 }
+#endif
 
 static void drs_profile_evt_handler()
 {
@@ -494,7 +509,7 @@ static void services_init(void)
     ret_code_t err_code;
     // ble_nus_init_t nus_init;
     nrf_ble_qwr_init_t qwr_init = {0};
-    ble_dfu_buttonless_init_t dfus_init = {0};
+    // ble_dfu_buttonless_init_t dfus_init = {0};
     DrsProfileCallback_t drs_init = {0};
     ErrsProfileCallback_t errs_init = {0};
     TssProfileCallback_t tss_init = {0};
@@ -520,6 +535,7 @@ static void services_init(void)
     err_code = tss_profile_init(&tss_init);
     APP_ERROR_CHECK(err_code);
 
+#if (BLE_DFU_ENABLED == 1)
     err_code = ble_dfu_buttonless_async_svci_init();
     APP_ERROR_CHECK(err_code);
 
@@ -527,6 +543,7 @@ static void services_init(void)
 
     err_code = ble_dfu_buttonless_init(&dfus_init);
     APP_ERROR_CHECK(err_code);
+#endif
 }
 
 /**@brief Function for handling the Connection Parameters Module.
@@ -592,6 +609,8 @@ static void application_timers_start(void)
     uint32_t err_code;
 
     err_code = app_timer_start(m_app_timer_id, TIME_LEVEL_MEAS_INTERVAL, NULL);
+    APP_ERROR_CHECK(err_code);
+    err_code = app_timer_start(m_systick_id, TIME_SYSTICK_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -1025,7 +1044,7 @@ int main(void)
     timers_init();
     // lfclk_config();
     // rtc_config();
-    // hal_spi_init();
+    hal_spi_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
@@ -1036,26 +1055,27 @@ int main(void)
     conn_params_init();
     peer_manager_init();
 
-    // rfalAnalogConfigInitialize();
-    // if (rfalInitialize() != ERR_NONE)
-    // {
-    //     platformLog("RFAL initialization failed..\r\n");
-    // }
-    // else
-    // {
-    //     platformLog("RFAL initialization succeeded..\r\n");
-    // }
     // Start execution.
     NRF_LOG_INFO("miaomiao3 device started.");
     application_timers_start();
 
     advertising_start(erase_bonds);
+    
+    rfalAnalogConfigInitialize();
+    if (rfalInitialize() != ERR_NONE)
+    {
+        platformLog("RFAL initialization failed..\r\n");
+    }
+    else
+    {
+        platformLog("RFAL initialization succeeded..\r\n");
+    }
 
     // Enter main loop.
     for (;;)
     {
         idle_state_handle();
-        // rfalWorker();
+        rfalWorker();
         // workCycle();
     }
 }

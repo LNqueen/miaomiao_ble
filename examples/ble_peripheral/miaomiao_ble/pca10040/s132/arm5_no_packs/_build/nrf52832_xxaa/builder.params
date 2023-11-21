@@ -270,6 +270,7 @@
         "../../../../../../integration/nrfx/legacy/nrf_drv_uart.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_clock.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c",
+        "../../../../../../modules/nrfx/drivers/src/nrfx_power_clock.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_rtc.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_spi.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_spim.c",

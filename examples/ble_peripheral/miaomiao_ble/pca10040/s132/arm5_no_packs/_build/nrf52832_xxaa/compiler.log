@@ -1,16 +1,7 @@
 >>> cc
 
-".\..\..\..\main.c", line 162: Warning:  #177-D: function "hal_spi_init"  was declared but never referenced
-  static void hal_spi_init(void)
-              ^
-".\..\..\..\main.c", line 335: Warning:  #177-D: function "lfclk_config"  was declared but never referenced
-  static void lfclk_config(void)
-              ^
-".\..\..\..\main.c", line 342: Warning:  #177-D: function "rtc_config"  was declared but never referenced
-  static void rtc_config(void)
-              ^
-.\..\..\..\main.c: 3 warnings, 0 errors
+
 
 >>> ld
 
-Program Size: Code=46848 RO-data=7616 RW-data=484 ZI-data=13524  
+Program Size: Code=52760 RO-data=8048 RW-data=500 ZI-data=14276  

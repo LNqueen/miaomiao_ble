@@ -94,6 +94,7 @@
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\integration\nrfx\legacy\nrf_drv_uart.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_clock.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_gpiote.o
+.\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_power_clock.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_rtc.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_spi.o
 .\_build\nrf52832_xxaa\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_spim.o
