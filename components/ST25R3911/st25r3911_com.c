@@ -104,7 +104,7 @@ void st25r3911ReadRegister(uint8_t reg, uint8_t* val)
     uint8_t  buf[2];
 #endif  /* ST25R391X_COM_SINGLETXRX */
   
-    // platformProtectST25R391xComm();
+    platformProtectST25R391xComm();
     platformSpiSelect();
   
     buf[0] = (reg | ST25R3911_READ_MODE);
@@ -113,7 +113,7 @@ void st25r3911ReadRegister(uint8_t reg, uint8_t* val)
     platformSpiTxRx(buf, buf, 2);
   
     platformSpiDeselect();
-    // platformUnprotectST25R391xComm();
+    platformUnprotectST25R391xComm();
   
     if(val != NULL)
     {
@@ -129,7 +129,7 @@ void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t* val, uint8_t length)
     uint8_t cmd = (reg | ST25R3911_READ_MODE);
 #endif  /* !ST25R391X_COM_SINGLETXRX */
   
-    // platformProtectST25R391xComm();
+    platformProtectST25R391xComm();
     platformSpiSelect();
   
 #ifdef ST25R391X_COM_SINGLETXRX
@@ -149,7 +149,7 @@ void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t* val, uint8_t length)
 #endif  /* ST25R391X_COM_SINGLETXRX */
 
     platformSpiDeselect();
-    // platformUnprotectST25R391xComm();
+    platformUnprotectST25R391xComm();
     return;
 }
 
@@ -162,7 +162,7 @@ void st25r3911ReadTestRegister(uint8_t reg, uint8_t* val)
     uint8_t  buf[3];
 #endif  /* ST25R391X_COM_SINGLETXRX */
 
-    // platformProtectST25R391xComm();
+    platformProtectST25R391xComm();
     platformSpiSelect();
 
     buf[0] = ST25R3911_CMD_TEST_ACCESS;
@@ -172,7 +172,7 @@ void st25r3911ReadTestRegister(uint8_t reg, uint8_t* val)
     platformSpiTxRx(buf, buf, 3);
   
     platformSpiDeselect();
-    // platformUnprotectST25R391xComm();
+    platformUnprotectST25R391xComm();
     
     if(val != NULL)
     {
@@ -190,7 +190,7 @@ void st25r3911WriteTestRegister(uint8_t reg, uint8_t val)
     uint8_t  buf[3];
 #endif  /* ST25R391X_COM_SINGLETXRX */
     
-    // platformProtectST25R391xComm();
+    platformProtectST25R391xComm();
     platformSpiSelect();
 
     buf[0] = ST25R3911_CMD_TEST_ACCESS;
@@ -200,7 +200,7 @@ void st25r3911WriteTestRegister(uint8_t reg, uint8_t val)
     platformSpiTxRx(buf, NULL, 3);
   
     platformSpiDeselect();
-    // platformUnprotectST25R391xComm();
+    platformUnprotectST25R391xComm();
 
     return;
 }
@@ -218,7 +218,7 @@ void st25r3911WriteRegister(uint8_t reg, uint8_t val)
         st25r3911CheckFieldSetLED(val);
     }    
     
-    // platformProtectST25R391xComm();
+    platformProtectST25R391xComm();
     platformSpiSelect();
 
     buf[0] = reg | ST25R3911_WRITE_MODE;
@@ -227,7 +227,7 @@ void st25r3911WriteRegister(uint8_t reg, uint8_t val)
     platformSpiTxRx(buf, NULL, 2);
     
     platformSpiDeselect();
-    // platformUnprotectST25R391xComm();
+    platformUnprotectST25R391xComm();
 
     return;
 }
@@ -307,7 +307,7 @@ void st25r3911WriteMultipleRegisters(uint8_t reg, const uint8_t* values, uint8_t
     if (length > 0)
     {
         /* make this operation atomic */
-        // platformProtectST25R391xComm();
+        platformProtectST25R391xComm();
         platformSpiSelect();
     
 #ifdef ST25R391X_COM_SINGLETXRX
@@ -325,7 +325,7 @@ void st25r3911WriteMultipleRegisters(uint8_t reg, const uint8_t* values, uint8_t
 #endif  /*ST25R391X_COM_SINGLETXRX*/    
     
         platformSpiDeselect();
-        // platformUnprotectST25R391xComm();
+        platformUnprotectST25R391xComm();
     }
     
     return;
@@ -340,7 +340,7 @@ void st25r3911WriteFifo(const uint8_t* values, uint8_t length)
 
     if (length > 0)
     {  
-        // platformProtectST25R391xComm();
+        platformProtectST25R391xComm();
         platformSpiSelect();
   
 #ifdef ST25R391X_COM_SINGLETXRX
@@ -358,7 +358,7 @@ void st25r3911WriteFifo(const uint8_t* values, uint8_t length)
 #endif  /*ST25R391X_COM_SINGLETXRX*/
   
         platformSpiDeselect();
-        // platformUnprotectST25R391xComm();
+        platformUnprotectST25R391xComm();
     }
 
     return;
@@ -372,7 +372,7 @@ void st25r3911ReadFifo(uint8_t* buf, uint8_t length)
     
     if(length > 0)
     {
-        // platformProtectST25R391xComm();
+        platformProtectST25R391xComm();
         platformSpiSelect();
 
 #ifdef ST25R391X_COM_SINGLETXRX
@@ -391,7 +391,7 @@ void st25r3911ReadFifo(uint8_t* buf, uint8_t length)
 #endif  /*ST25R391X_COM_SINGLETXRX*/
       
         platformSpiDeselect();
-        // platformUnprotectST25R391xComm();
+        platformUnprotectST25R391xComm();
     }
 
     return;
@@ -408,13 +408,13 @@ void st25r3911ExecuteCommand(uint8_t cmd)
     
     cmd |= ST25R3911_CMD_MODE;
 
-    // platformProtectST25R391xComm();
+    platformProtectST25R391xComm();
     platformSpiSelect();
     
     platformSpiTxRx( &cmd, NULL, ST25R3911_CMD_LEN );
     
     platformSpiDeselect();
-    // platformUnprotectST25R391xComm();
+    platformUnprotectST25R391xComm();
 
     return;
 }
@@ -422,13 +422,13 @@ void st25r3911ExecuteCommand(uint8_t cmd)
 
 void st25r3911ExecuteCommands(uint8_t *cmds, uint8_t length)
 {
-    // platformProtectST25R391xComm();
+    platformProtectST25R391xComm();
     platformSpiSelect();
     
     platformSpiTxRx( cmds, NULL, length );
     
     platformSpiDeselect();
-    // platformUnprotectST25R391xComm();
+    platformUnprotectST25R391xComm();
 
     return;
 }

@@ -392,6 +392,36 @@
               <FileType>5</FileType>
               <FilePath>..\config\sdk_config.h</FilePath>
             </File>
+            <File>
+              <FileName>nfcv_worker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\nfcv_worker.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/ST25R3911</GroupName>
+          <Files>
+            <File>
+              <FileName>st25r3911.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911.c</FilePath>
+            </File>
+            <File>
+              <FileName>st25r3911_com.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_com.c</FilePath>
+            </File>
+            <File>
+              <FileName>st25r3911_interrupt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_interrupt.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -456,31 +486,6 @@
               <FileName>rfal_t1t.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\..\components\ST25R3911\rfal\Src\rfal_t1t.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/ST25R3911</GroupName>
-          <Files>
-            <File>
-              <FileName>st25r3911.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911.c</FilePath>
-            </File>
-            <File>
-              <FileName>st25r3911_com.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_com.c</FilePath>
-            </File>
-            <File>
-              <FileName>st25r3911_interrupt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_interrupt.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\timer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4928,6 +4933,36 @@
               <FileType>5</FileType>
               <FilePath>..\config\sdk_config.h</FilePath>
             </File>
+            <File>
+              <FileName>nfcv_worker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\nfcv_worker.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/ST25R3911</GroupName>
+          <Files>
+            <File>
+              <FileName>st25r3911.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911.c</FilePath>
+            </File>
+            <File>
+              <FileName>st25r3911_com.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_com.c</FilePath>
+            </File>
+            <File>
+              <FileName>st25r3911_interrupt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_interrupt.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\components\ST25R3911\timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4992,31 +5027,6 @@
               <FileName>rfal_t1t.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\..\components\ST25R3911\rfal\Src\rfal_t1t.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/ST25R3911</GroupName>
-          <Files>
-            <File>
-              <FileName>st25r3911.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911.c</FilePath>
-            </File>
-            <File>
-              <FileName>st25r3911_com.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_com.c</FilePath>
-            </File>
-            <File>
-              <FileName>st25r3911_interrupt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\st25r3911_interrupt.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\components\ST25R3911\timer.c</FilePath>
             </File>
           </Files>
         </Group>

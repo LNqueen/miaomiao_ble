@@ -104,9 +104,10 @@
 * GLOBAL MACROS
 ******************************************************************************
 */
-
-// #define platformProtectST25R391xComm() HAL_NVIC_DisableIRQ(EXTI0_IRQn)  /*!< Protect unique access to ST25R391x communication channel - IRQ disable on single thread environment (MCU) ; Mutex lock on a multi thread environment      */
-// #define platformUnprotectST25R391xComm() HAL_NVIC_EnableIRQ(EXTI0_IRQn) /*!< Unprotect unique access to ST25R391x communication channel - IRQ enable on a single thread environment (MCU) ; Mutex unlock on a multi thread environment */
+extern void IRQ_Enable(void);
+extern void IRQ_Disable(void);
+#define platformProtectST25R391xComm() IRQ_Disable()  /*!< Protect unique access to ST25R391x communication channel - IRQ disable on single thread environment (MCU) ; Mutex lock on a multi thread environment      */
+#define platformUnprotectST25R391xComm() IRQ_Enable() /*!< Unprotect unique access to ST25R391x communication channel - IRQ enable on a single thread environment (MCU) ; Mutex unlock on a multi thread environment */
 
 #define platformIrqST25R3911SetCallback(cb)
 #define platformIrqST25R3911PinInitialize()
@@ -114,8 +115,8 @@
 #define platformIrqST25R3916SetCallback(cb)
 #define platformIrqST25R3916PinInitialize()
 
-// #define platformProtectST25R391xIrqStatus() platformProtectST25R391xComm()     /*!< Protect unique access to IRQ status var - IRQ disable on single thread environment (MCU) ; Mutex lock on a multi thread environment */
-// #define platformUnprotectST25R391xIrqStatus() platformUnprotectST25R391xComm() /*!< Unprotect the IRQ status var - IRQ enable on a single thread environment (MCU) ; Mutex unlock on a multi thread environment         */
+#define platformProtectST25R391xIrqStatus() platformProtectST25R391xComm()     /*!< Protect unique access to IRQ status var - IRQ disable on single thread environment (MCU) ; Mutex lock on a multi thread environment */
+#define platformUnprotectST25R391xIrqStatus() platformUnprotectST25R391xComm() /*!< Unprotect the IRQ status var - IRQ enable on a single thread environment (MCU) ; Mutex unlock on a multi thread environment         */
 
 #define platformLedsInitialize() /*!< Initializes the pins used as LEDs to outputs*/
 
@@ -165,7 +166,7 @@ extern uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len
 #define RFAL_FEATURE_ST25TB false                /*!< Enable/Disable RFAL support for ST25TB                                    */
 #define RFAL_FEATURE_DYNAMIC_ANALOG_CONFIG false /*!< Enable/Disable Analog Configs to be dynamically updated (RAM)             */
 #define RFAL_FEATURE_DYNAMIC_POWER false         /*!< Enable/Disable RFAL dynamic power support                                 */
-#define RFAL_FEATURE_ISO_DEP false                /*!< Enable/Disable RFAL support for ISO-DEP (ISO14443-4)                      */
+#define RFAL_FEATURE_ISO_DEP false               /*!< Enable/Disable RFAL support for ISO-DEP (ISO14443-4)                      */
 #define RFAL_FEATURE_NFC_DEP true                /*!< Enable/Disable RFAL support for NFC-DEP (NFCIP1/P2P)                      */
 
 #define RFAL_FEATURE_ISO_DEP_IBLOCK_MAX_LEN 256 /*!< ISO-DEP I-Block max length. Please use values as defined by rfalIsoDepFSx */

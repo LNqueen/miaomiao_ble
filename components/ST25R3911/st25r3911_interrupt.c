@@ -182,9 +182,9 @@ uint32_t st25r3911WaitForInterruptsTimed(uint32_t mask, uint16_t tmo)
 
     status = st25r3911interrupt.status & mask;
 
-    // platformProtectST25R391xIrqStatus();
+    platformProtectST25R391xIrqStatus();
     st25r3911interrupt.status &= ~status;
-    // platformUnprotectST25R391xIrqStatus();
+    platformUnprotectST25R391xIrqStatus();
 
     return status;
 }
@@ -195,9 +195,9 @@ uint32_t st25r3911GetInterrupt(uint32_t mask)
 
     if (mask)
     {
-        // platformProtectST25R391xIrqStatus();
+        platformProtectST25R391xIrqStatus();
         st25r3911interrupt.status &= ~mask;
-        // platformUnprotectST25R391xIrqStatus();
+        platformUnprotectST25R391xIrqStatus();
     }
     return mask;
 }
@@ -218,9 +218,9 @@ void st25r3911ClearInterrupts(void)
 
     st25r3911ReadMultipleRegisters(ST25R3911_REG_IRQ_MAIN, iregs, 3);
 
-    // platformProtectST25R391xIrqStatus();
+    platformProtectST25R391xIrqStatus();
     st25r3911interrupt.status = 0;
-    // platformUnprotectST25R391xIrqStatus();
+    platformUnprotectST25R391xIrqStatus();
     return;
 }
 

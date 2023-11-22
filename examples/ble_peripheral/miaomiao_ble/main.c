@@ -88,6 +88,7 @@
 #include "nrf_drv_clock.h"
 #include "nrf_drv_rtc.h"
 #include "nrf_drv_spi.h"
+#include "nrf_drv_gpiote.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -96,6 +97,8 @@
 #include "rfal_rf.h"
 #include "rfal_analogConfig.h"
 #include "nfcv_worker.h"
+
+#include "st25R3911_interrupt.h"
 
 #define DEVICE_NAME "miaomiao3_"                           /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME "NordicSemiconductor"            /**< Manufacturer. Will be passed to Device Information Service. */
@@ -142,7 +145,7 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID; /**< Handle of the curr
  *  BLE_XYZ_DEF(m_xyz);
  */
 static volatile bool spi_xfer_done;
-const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(0);
+// const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(0);
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 // static ble_uuid_t m_adv_uuids[] = /**< Universally unique service identifiers. */
 //     {
@@ -153,6 +156,37 @@ static const nrf_drv_spi_t m_spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);
 uint32_t cur_TZ = 0;
 
 static void advertising_start(bool erase_bonds);
+
+static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+    st25r3911Isr();
+}
+
+static void gpio_init(void)
+{
+    ret_code_t err_code;
+    err_code = nrf_drv_gpiote_init();
+    APP_ERROR_CHECK(err_code);
+
+    // riseing edge trigger
+    nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_LOTOHI(true);
+    in_config.pull = NRF_GPIO_PIN_NOPULL;
+
+    err_code = nrf_drv_gpiote_in_init(IRQ_PIN, &in_config, in_pin_handler);
+    APP_ERROR_CHECK(err_code);
+}
+
+void IRQ_Enable(void)
+{
+    // 使能GPIOTE
+    nrf_drv_gpiote_in_event_enable(IRQ_PIN, true);
+}
+
+void IRQ_Disable(void)
+{
+    // 失能GPIOTE
+    nrf_drv_gpiote_in_event_disable(IRQ_PIN);
+}
 
 void spi_event_handler(nrf_drv_spi_evt_t const *p_event, void *p_context)
 {
@@ -167,6 +201,7 @@ static void hal_spi_init(void)
     spi_config.mosi_pin = SPIM0_MOSI_PIN;
     spi_config.sck_pin = SPIM0_SCK_PIN;
     spi_config.mode = NRF_DRV_SPI_MODE_3;
+    spi_config.frequency = NRF_DRV_SPI_FREQ_4M;
     APP_ERROR_CHECK(nrf_drv_spi_init(&m_spi, &spi_config, spi_event_handler, NULL));
 }
 
@@ -1045,6 +1080,7 @@ int main(void)
     // lfclk_config();
     // rtc_config();
     hal_spi_init();
+    gpio_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
