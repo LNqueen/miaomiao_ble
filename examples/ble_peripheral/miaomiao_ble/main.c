@@ -145,7 +145,7 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID; /**< Handle of the curr
  *  BLE_XYZ_DEF(m_xyz);
  */
 static volatile bool spi_xfer_done;
-// const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(0);
+const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(2);
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 // static ble_uuid_t m_adv_uuids[] = /**< Universally unique service identifiers. */
 //     {
@@ -200,8 +200,8 @@ static void hal_spi_init(void)
     spi_config.miso_pin = SPIM0_MISO_PIN;
     spi_config.mosi_pin = SPIM0_MOSI_PIN;
     spi_config.sck_pin = SPIM0_SCK_PIN;
-    spi_config.mode = NRF_DRV_SPI_MODE_3;
-    spi_config.frequency = NRF_DRV_SPI_FREQ_4M;
+    spi_config.mode = NRF_DRV_SPI_MODE_1;
+    spi_config.frequency = NRF_DRV_SPI_FREQ_2M;
     APP_ERROR_CHECK(nrf_drv_spi_init(&m_spi, &spi_config, spi_event_handler, NULL));
 }
 
@@ -216,7 +216,9 @@ uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
     spi_xfer_done = false;
     APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, (rxData != NULL) ? rxData : rx, len));
     while (!spi_xfer_done)
-        ;
+    {
+        __WFE();
+    }
     return 0;
 }
 /**@brief Callback function for asserts in the SoftDevice.
@@ -337,15 +339,15 @@ static void timer_timeout_handler(void *p_context)
     time_update();
 }
 
-APP_TIMER_DEF(m_systick_id);
-#define TIME_SYSTICK_INTERVAL APP_TIMER_TICKS(1)
+// APP_TIMER_DEF(m_systick_id);
+// #define TIME_SYSTICK_INTERVAL APP_TIMER_TICKS(1)
 uint32_t my_systick = 0;
 
-static void systick_timeout_handler(void *p_context)
-{
-    UNUSED_PARAMETER(p_context);
-    my_systick++;
-}
+// static void systick_timeout_handler(void *p_context)
+// {
+//     UNUSED_PARAMETER(p_context);
+//     my_systick++;
+// }
 static void timers_init(void)
 {
     // Initialize timer module.
@@ -363,41 +365,43 @@ static void timers_init(void)
        APP_ERROR_CHECK(err_code); */
     err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
     APP_ERROR_CHECK(err_code);
-    err_code = app_timer_create(&m_systick_id, APP_TIMER_MODE_REPEATED, systick_timeout_handler);
-    APP_ERROR_CHECK(err_code);
+    // err_code = app_timer_create(&m_systick_id, APP_TIMER_MODE_REPEATED, systick_timeout_handler);
+    // APP_ERROR_CHECK(err_code);
 }
 
-// static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
-// {
-//     if (int_type == NRF_DRV_RTC_INT_TICK)
-//     {
-//         my_systick++;
-//     }
-// }
+static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
+{
+    if (int_type == NRF_DRV_RTC_INT_TICK)
+    {
+        my_systick++;
+    }
+}
 
 uint32_t get_sysTick(void)
 {
     return my_systick;
 }
 
-// static void lfclk_config(void)
-// {
-//     ret_code_t err_code = nrf_drv_clock_init();
-//     APP_ERROR_CHECK(err_code);
-//     nrf_drv_clock_lfclk_request(NULL);
-// }
+static void lfclk_config(void)
+{
+    ret_code_t err_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(err_code);
+    nrf_drv_clock_lfclk_request(NULL);
+}
 
-// static void rtc_config(void)
-// {
-//     uint32_t err_code;
+static void rtc_config(void)
+{
+    uint32_t err_code;
 
-//     nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
-//     err_code = nrf_drv_rtc_init(&m_rtc, &config, rtc_handler);
-//     APP_ERROR_CHECK(err_code);
+    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
+    config.prescaler = 31;
 
-//     nrf_drv_rtc_tick_enable(&m_rtc, true);
-//     nrf_drv_rtc_enable(&m_rtc);
-// }
+    err_code = nrf_drv_rtc_init(&m_rtc, &config, rtc_handler);
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_rtc_tick_enable(&m_rtc, true);
+    nrf_drv_rtc_enable(&m_rtc);
+}
 
 /**@brief Function for the GAP initialization.
  *
@@ -645,8 +649,8 @@ static void application_timers_start(void)
 
     err_code = app_timer_start(m_app_timer_id, TIME_LEVEL_MEAS_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
-    err_code = app_timer_start(m_systick_id, TIME_SYSTICK_INTERVAL, NULL);
-    APP_ERROR_CHECK(err_code);
+    // err_code = app_timer_start(m_systick_id, TIME_SYSTICK_INTERVAL, NULL);
+    // APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for putting the chip into sleep mode.
@@ -1077,8 +1081,8 @@ int main(void)
     // Initialize.
     log_init();
     timers_init();
-    // lfclk_config();
-    // rtc_config();
+    lfclk_config();
+    rtc_config();
     hal_spi_init();
     gpio_init();
     buttons_leds_init(&erase_bonds);

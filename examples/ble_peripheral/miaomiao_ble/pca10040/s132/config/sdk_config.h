@@ -5054,7 +5054,7 @@
 // <q> RTC0_ENABLED  - Enable RTC0 instance
 
 #ifndef RTC0_ENABLED
-#define RTC0_ENABLED 1
+#define RTC0_ENABLED 0
 #endif
 
 // <q> RTC1_ENABLED  - Enable RTC1 instance
@@ -5066,7 +5066,7 @@
 // <q> RTC2_ENABLED  - Enable RTC2 instance
 
 #ifndef RTC2_ENABLED
-#define RTC2_ENABLED 0
+#define RTC2_ENABLED 1
 #endif
 
 // <o> NRF_MAXIMUM_LATENCY_US - Maximum possible time[us] in highest priority interrupt

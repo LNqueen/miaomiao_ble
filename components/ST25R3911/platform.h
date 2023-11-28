@@ -124,8 +124,8 @@ extern void IRQ_Disable(void);
 #define platformLedOn(pin) platformGpioSet(pin)        /*!< Turns the given LED On                      */
 #define platformLedToogle(pin) platformGpioToogle(pin) /*!< Toogle the given LED                        */
 
-#define platformGpioSet(pin) nrf_gpio_pin_write(pin, 1)       /*!< Turns the given GPIO High                   */
-#define platformGpioClear(pin) nrf_gpio_pin_write(pin, 0)     /*!< Turns the given GPIO Low                    */
+#define platformGpioSet(pin) nrf_gpio_pin_set(pin)            /*!< Turns the given GPIO High                   */
+#define platformGpioClear(pin) nrf_gpio_pin_clear(pin)        /*!< Turns the given GPIO Low                    */
 #define platformGpioToogle(pin) nrf_gpio_pin_toggle(pin)      /*!< Toogles the given GPIO                      */
 #define platformGpioIsHigh(pin) (nrf_gpio_pin_read(pin) == 1) /*!< Checks if the given LED is High             */
 #define platformGpioIsLow(pin) (!platformGpioIsHigh(pin))     /*!< Checks if the given LED is Low              */
