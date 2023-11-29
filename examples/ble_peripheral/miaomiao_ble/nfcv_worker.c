@@ -69,17 +69,17 @@ void workCycle(void)
         platformDelay(300);
 
         /* If WakeUp is to be executed, enable Wake-Up mode */
-        if (doWakeUp)
-        {
-            platformLog("Going to Wakeup mode.\r\n");
+        // if (doWakeUp)
+        // {
+        platformLog("Going to Wakeup mode.\r\n");
 
-            rfalWakeUpModeStart(NULL);
-            state = WAIT_WAKEUP;
-            break;
-        }
-
-        NEXT_STATE();
+        rfalWakeUpModeStart(NULL);
+        state = WAIT_WAKEUP;
         break;
+        // }
+
+        // NEXT_STATE();
+        // break;
 
     case POLL_ACTIVE_TECH:
         platformDelay(40);
@@ -90,7 +90,7 @@ void workCycle(void)
         found |= PollNFCV();
 
         platformDelay(300);
-        state = FIELD_OFF;
+        // state = FIELD_OFF;
         break;
 
     case WAIT_WAKEUP:
@@ -98,6 +98,7 @@ void workCycle(void)
         /* Check if Wake-Up Mode has been awaked */
         if (rfalWakeUpModeHasWoke())
         {
+            platformLog("start poll\r\n");
             /* If awake, go directly to Poll */
             rfalWakeUpModeStop();
             state = POLL_ACTIVE_TECH;
@@ -126,7 +127,7 @@ bool PollNFCV(void)
     /* ISO15693/NFC_V_PASSIVE_POLL_MODE                                            */
     /*******************************************************************************/
 
-    rfalNfcvPollerInitialize(); /* Initialize for NFC-F */
+    rfalNfcvPollerInitialize(); /* Initialize for NFC-V */
     rfalFieldOnAndStartGT();    /* Turns the Field On if not already and start GT timer */
 
     err = rfalNfcvPollerCollisionResolution(1, &nfcvDev, &devCnt);

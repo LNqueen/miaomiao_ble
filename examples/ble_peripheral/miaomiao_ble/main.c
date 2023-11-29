@@ -146,6 +146,8 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID; /**< Handle of the curr
  */
 static volatile bool spi_xfer_done;
 const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(2);
+static uint8_t tx[256];
+static uint8_t rx[256];
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 // static ble_uuid_t m_adv_uuids[] = /**< Universally unique service identifiers. */
 //     {
@@ -207,11 +209,13 @@ static void hal_spi_init(void)
 
 uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
 {
-    uint8_t tx[256];
-    uint8_t rx[256];
     if (txData != NULL)
     {
         memcpy(tx, txData, len);
+    }
+    else
+    {
+        memset(tx, 0x00, len);
     }
     spi_xfer_done = false;
     APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, (rxData != NULL) ? rxData : rx, len));
@@ -219,6 +223,7 @@ uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
     {
         __WFE();
     }
+    nrf_delay_ms(10);
     return 0;
 }
 /**@brief Callback function for asserts in the SoftDevice.
@@ -328,10 +333,10 @@ APP_TIMER_DEF(m_app_timer_id);
 
 static void time_update(void)
 {
-    static uint8_t time_level = 0;
+    // static uint8_t time_level = 0;
 
-    time_level++;
-    NRF_LOG_INFO("%d", (uint8_t)time_level);
+    // time_level++;
+    // NRF_LOG_INFO("%d", (uint8_t)time_level);
 }
 static void timer_timeout_handler(void *p_context)
 {
