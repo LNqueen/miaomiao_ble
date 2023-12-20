@@ -99,6 +99,7 @@
 #include "nfcv_worker.h"
 
 #include "st25R3911_interrupt.h"
+#include "st25r3911_com.h"
 
 #define DEVICE_NAME "miaomiao3_"                           /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME "NordicSemiconductor"            /**< Manufacturer. Will be passed to Device Information Service. */
@@ -146,8 +147,7 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID; /**< Handle of the curr
  */
 static volatile bool spi_xfer_done;
 const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(2);
-static uint8_t tx[256];
-static uint8_t rx[256];
+
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 // static ble_uuid_t m_adv_uuids[] = /**< Universally unique service identifiers. */
 //     {
@@ -156,6 +156,11 @@ static uint8_t rx[256];
 static const nrf_drv_spi_t m_spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);
 
 uint32_t cur_TZ = 0;
+
+uint8_t irq_flag = 0;
+
+static uint8_t tx[256];
+static uint8_t rx[256];
 
 static void advertising_start(bool erase_bonds);
 
@@ -203,7 +208,7 @@ static void hal_spi_init(void)
     spi_config.mosi_pin = SPIM0_MOSI_PIN;
     spi_config.sck_pin = SPIM0_SCK_PIN;
     spi_config.mode = NRF_DRV_SPI_MODE_1;
-    spi_config.frequency = NRF_DRV_SPI_FREQ_2M;
+    spi_config.frequency = NRF_DRV_SPI_FREQ_1M;
     APP_ERROR_CHECK(nrf_drv_spi_init(&m_spi, &spi_config, spi_event_handler, NULL));
 }
 
@@ -213,17 +218,13 @@ uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
     {
         memcpy(tx, txData, len);
     }
-    else
-    {
-        memset(tx, 0x00, len);
-    }
+
     spi_xfer_done = false;
     APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, (rxData != NULL) ? rxData : rx, len));
     while (!spi_xfer_done)
     {
-        __WFE();
     }
-    nrf_delay_ms(10);
+
     return 0;
 }
 /**@brief Callback function for asserts in the SoftDevice.
@@ -1079,6 +1080,7 @@ static void advertising_start(bool erase_bonds)
 
 /**@brief Function for application main entry.
  */
+uint8_t register_data[64] = {0};
 int main(void)
 {
     bool erase_bonds;
@@ -1114,6 +1116,10 @@ int main(void)
     else
     {
         platformLog("RFAL initialization succeeded..\r\n");
+    }
+    for (int i = 0; i < 64; i++)
+    {
+        st25r3911ReadRegister(ST25R3911_REG_IO_CONF1 + i, &register_data[i]);
     }
 
     // Enter main loop.

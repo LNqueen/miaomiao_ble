@@ -515,7 +515,7 @@ static nrfx_err_t spim_xfer(NRF_SPIM_Type               * p_spim,
 
     if (!p_cb->handler)
     {
-        while (!nrf_spim_event_check(p_spim, NRF_SPIM_EVENT_END)){}
+        while (!nrf_spim_event_check(p_spim, NRF_SPIM_EVENT_END)){}// TODO 卡在这个地方
 
 #if NRFX_CHECK(NRFX_SPIM3_NRF52840_ANOMALY_198_WORKAROUND_ENABLED)
         if (p_spim == NRF_SPIM3)

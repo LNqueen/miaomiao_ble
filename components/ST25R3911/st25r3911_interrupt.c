@@ -217,7 +217,6 @@ void st25r3911ClearInterrupts(void)
     uint8_t iregs[3];
 
     st25r3911ReadMultipleRegisters(ST25R3911_REG_IRQ_MAIN, iregs, 3);
-
     platformProtectST25R391xIrqStatus();
     st25r3911interrupt.status = 0;
     platformUnprotectST25R391xIrqStatus();

@@ -44,6 +44,7 @@
 #include "utils.h"
 #include "st_errno.h"
 #include "platform.h"
+#include <stdlib.h>
 
 /*
 ******************************************************************************
@@ -125,6 +126,7 @@ void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t *val, uint8_t length)
 {
 #if !defined(ST25R391X_COM_SINGLETXRX)
     uint8_t cmd = (reg | ST25R3911_READ_MODE);
+    uint8_t *tmp;
 #endif /* !ST25R391X_COM_SINGLETXRX */
 
     platformProtectST25R391xComm();
@@ -138,12 +140,17 @@ void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t *val, uint8_t length)
     platformSpiTxRx(comBuf, comBuf, (ST25R3911_CMD_LEN + length)); /* Transceive as a single SPI call                        */
     ST_MEMCPY(val, &comBuf[ST25R3911_CMD_LEN], length);            /* Copy from local buf to output buffer and skip cmd byte */
 
-#else /* ST25R391X_COM_SINGLETXRX */
-
+#else  /* ST25R391X_COM_SINGLETXRX */
+    tmp = (uint8_t *)malloc(sizeof(uint8_t) * (length + 2));
     /* Since the result comes one byte later, let's first transmit the adddress with discarding the result */
-    platformSpiTxRx(&cmd, NULL, ST25R3911_CMD_LEN);
-    platformSpiTxRx(NULL, val, length);
-
+    // platformSpiTxRx(&cmd, NULL, ST25R3911_CMD_LEN);
+    // platformSpiTxRx(NULL, val, length);
+    platformSpiTxRx(&cmd, tmp, 2 + length);
+    for (int i = 0; i < length; i++)
+    {
+        val[i] = tmp[i + 2];
+    }
+    free(tmp);
 #endif /* ST25R391X_COM_SINGLETXRX */
 
     platformSpiDeselect();

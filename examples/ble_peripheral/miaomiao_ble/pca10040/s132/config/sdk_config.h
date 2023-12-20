@@ -3231,7 +3231,7 @@
 // <q> NRFX_SPIM0_ENABLED  - Enable SPIM0 instance
 
 #ifndef NRFX_SPIM0_ENABLED
-#define NRFX_SPIM0_ENABLED 0
+#define NRFX_SPIM0_ENABLED 1
 #endif
 
 // <q> NRFX_SPIM1_ENABLED  - Enable SPIM1 instance
@@ -3268,7 +3268,7 @@
 // <7=> 7
 
 #ifndef NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY
-#define NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY 6
+#define NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY 5
 #endif
 
 // <e> NRFX_SPIM_CONFIG_LOG_ENABLED - Enables logging in the module.
@@ -3498,7 +3498,7 @@
 // <7=> 7
 
 #ifndef NRFX_SPI_DEFAULT_CONFIG_IRQ_PRIORITY
-#define NRFX_SPI_DEFAULT_CONFIG_IRQ_PRIORITY 6
+#define NRFX_SPI_DEFAULT_CONFIG_IRQ_PRIORITY 5
 #endif
 
 // <e> NRFX_SPI_CONFIG_LOG_ENABLED - Enables logging in the module.
@@ -3910,7 +3910,7 @@
 // <e> NRFX_TWIS_ENABLED - nrfx_twis - TWIS peripheral driver
 //==========================================================
 #ifndef NRFX_TWIS_ENABLED
-#define NRFX_TWIS_ENABLED 0
+#define NRFX_TWIS_ENABLED 1
 #endif
 // <q> NRFX_TWIS0_ENABLED  - Enable TWIS0 instance
 
