@@ -24,9 +24,9 @@ static void on_write(TssProfile_t *p_tss, ble_evt_t const *pBleEvent)
     {
         // 组合成32位的数据
         timestamp = pEventWrite->data[0] << 24 | pEventWrite->data[1] << 16 |
-                    pEventWrite->data[2] << 8 | pEventWrite->data[3];
+                    pEventWrite->data[2] << 8 | pEventWrite->data[3] << 0;
         p_tss->tss_evt_handler(timestamp);
-        NRF_LOG_INFO("TSS characteristic written");
+        NRF_LOG_INFO("TSS characteristic written %d", timestamp);
     }
 }
 

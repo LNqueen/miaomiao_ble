@@ -27,7 +27,12 @@ extern "C"
 #define ERRS_PROFILE_UUID_CHAR 0X0002
 
 // Length of Characteristic in bytes
-#define ERRS_PROFILE_CHAR_LEN 20
+#define ERRS_PROFILE_CHAR_LEN 2
+
+#define ERRS_NORMAL 0
+#define ERRS_BATTERY_LOW 1
+#define ERRS_LIBRE_TIMEOUT 2
+#define ERRS_LOW_BLOOD_GLUCOSE 3
 
     typedef struct errsProfileService_s ErrsProfile_t;
 
@@ -50,6 +55,7 @@ extern "C"
     uint32_t ble_errs_on_data_send(ErrsProfile_t *p_errs, void *p_data, uint16_t length);
     uint32_t errs_profile_init(const ErrsProfileCallback_t *p_app_cb);
     void ble_errs_on_ble_evt(ble_evt_t const *p_ble_evt, void *p_context);
+    uint8_t errs_adv_notify_send(uint16_t *err_number);
 
 #ifdef __cplusplus
 }

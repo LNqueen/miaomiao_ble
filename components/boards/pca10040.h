@@ -96,6 +96,7 @@ extern "C"
 #define HWFC true
 
 #define IRQ_PIN 20
+#define CHG_PIN 30
 
 #define SPIS_MISO_PIN 28 // SPI MISO signal.
 #define SPIS_CSN_PIN 12  // SPI CSN signal.

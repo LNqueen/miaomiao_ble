@@ -54,6 +54,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "nordic_common.h"
 #include "nrf.h"
@@ -156,13 +157,55 @@ const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(2);
 static const nrf_drv_spi_t m_spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);
 
 uint32_t cur_TZ = 0;
-
-uint8_t irq_flag = 0;
+s_storagedata adv_storage_data[LIBRE_DATA_LEN];
+uint32_t dataNumber = 0;
 
 static uint8_t tx[256];
 static uint8_t rx[256];
 
+// 0: disconnected; 1: charging; 2: foc;
+uint8_t charge_status = 0;
+
+uint8_t device_connect_sta = 0;
+
+/* Flag to check fds initialization. */
+bool volatile m_fds_initialized;
+
+// tz data save
+#define CONFIG_TZ_FILE 0x1f00
+#define CONFIG_TZ_KEY 0x1f1f
+
+static fds_record_t const m_dummy_tz_record = {
+    .file_id = CONFIG_TZ_FILE,
+    .key = CONFIG_TZ_KEY,
+    .data.p_data = (uint32_t *)&cur_TZ,
+    .data.length_words = (sizeof(cur_TZ) + 3) / sizeof(uint32_t),
+};
+
+// adv data save
+#define ADV_DATA_FILE 0x1f01
+#define ADV_DATA_KEY 0x1f2f
+static fds_record_t const m_dummy_adv_record = {
+    .file_id = ADV_DATA_FILE,
+    .key = ADV_DATA_KEY,
+    .data.p_data = &adv_storage_data,
+    .data.length_words = (sizeof(adv_storage_data) + 3) / sizeof(uint32_t),
+};
+
+#define ADV_DATA_NUMBER_FILE 0x1f02
+#define ADV_DATA_NUMBER_KEY 0x1f3f
+static fds_record_t const m_dummy_adc_data_number_record = {
+    .file_id = ADV_DATA_NUMBER_FILE,
+    .key = ADV_DATA_NUMBER_KEY,
+    .data.p_data = &dataNumber,
+    .data.length_words = (sizeof(dataNumber) + 3) / sizeof(uint32_t),
+};
+
+DrsHisPayload_s his_payload;
+uint8_t his_payload_send_flag = 0;
+
 static void advertising_start(bool erase_bonds);
+static void adv_data_refresh(void);
 
 static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
@@ -181,6 +224,8 @@ static void gpio_init(void)
 
     err_code = nrf_drv_gpiote_in_init(IRQ_PIN, &in_config, in_pin_handler);
     APP_ERROR_CHECK(err_code);
+
+    nrf_gpio_cfg_input(CHG_PIN, NRF_GPIO_PIN_PULLUP);
 }
 
 void IRQ_Enable(void)
@@ -208,7 +253,7 @@ static void hal_spi_init(void)
     spi_config.mosi_pin = SPIM0_MOSI_PIN;
     spi_config.sck_pin = SPIM0_SCK_PIN;
     spi_config.mode = NRF_DRV_SPI_MODE_1;
-    spi_config.frequency = NRF_DRV_SPI_FREQ_1M;
+    spi_config.frequency = NRF_DRV_SPI_FREQ_2M;
     APP_ERROR_CHECK(nrf_drv_spi_init(&m_spi, &spi_config, spi_event_handler, NULL));
 }
 
@@ -324,6 +369,262 @@ static void pm_evt_handler(pm_evt_t const *p_evt)
         break;
     }
 }
+// fds处理事件回调
+static void fds_evt_handler(fds_evt_t const *p_evt)
+{
+    switch (p_evt->id)
+    {
+    case FDS_EVT_INIT:
+        if (p_evt->result == NRF_SUCCESS)
+        {
+            m_fds_initialized = true;
+        }
+        break;
+
+    case FDS_EVT_WRITE:
+    {
+        if (p_evt->result == NRF_SUCCESS)
+        {
+            NRF_LOG_INFO("Write File ID:\t0x%04x", p_evt->write.file_id);
+        }
+    }
+    break;
+
+    case FDS_EVT_DEL_RECORD:
+    {
+        if (p_evt->result == NRF_SUCCESS)
+        {
+            NRF_LOG_INFO("Delete File ID:\t0x%04x", p_evt->del.file_id);
+        }
+    }
+    break;
+
+    default:
+        break;
+    }
+}
+
+void fds_init_function(void)
+{
+    ret_code_t err_code;
+
+    (void)fds_register(fds_evt_handler);
+    err_code = fds_init();
+    APP_ERROR_CHECK(err_code);
+    while (!m_fds_initialized)
+    {
+        sd_app_evt_wait();
+    }
+    fds_stat_t stat = {0};
+    err_code = fds_stat(&stat);
+    APP_ERROR_CHECK(err_code);
+}
+
+bool fds_tz_record_delete(void)
+{
+    ret_code_t err_code;
+    fds_find_token_t tok = {0};
+    fds_record_desc_t desc = {0};
+    err_code = fds_record_find(CONFIG_TZ_FILE, CONFIG_TZ_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        err_code = fds_record_delete(&desc);
+        if (err_code != NRF_SUCCESS)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    else
+    {
+        /* No records left to delete. */
+        return false;
+    }
+}
+
+void fds_tz_update(void)
+{
+    fds_tz_record_delete();
+    fds_gc();
+    ret_code_t err_code;
+    fds_record_desc_t desc = {0};                           // 用来操作记录的描述符结构清零
+    err_code = fds_record_write(&desc, &m_dummy_tz_record); // 写记录和数据
+    APP_ERROR_CHECK(err_code);
+}
+
+void fds_tz_read(void)
+{
+    ret_code_t err_code;
+    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
+    fds_find_token_t tok = {0};   // 保存秘钥的令牌清零
+    uint32_t *data = 0;
+
+    err_code = fds_record_find(CONFIG_TZ_FILE, CONFIG_TZ_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        fds_flash_record_t config = {0};
+
+        err_code = fds_record_open(&desc, &config);
+        APP_ERROR_CHECK(err_code);
+
+        data = (uint32_t *)config.p_data;
+
+        cur_TZ = data[0];
+
+        /* Close the record when done reading. */
+        err_code = fds_record_close(&desc); // 关闭记录
+        APP_ERROR_CHECK(err_code);
+    }
+    else
+    {
+        err_code = fds_record_write(&desc, &m_dummy_tz_record); // 写记录和数据
+        APP_ERROR_CHECK(err_code);
+    }
+}
+
+bool fds_adv_record_delete(void)
+{
+    ret_code_t err_code;
+    fds_find_token_t tok = {0};
+    fds_record_desc_t desc = {0};
+    err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        err_code = fds_record_delete(&desc);
+        if (err_code != NRF_SUCCESS)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    else
+    {
+        /* No records left to delete. */
+        return false;
+    }
+}
+
+void fds_adv_data_update(void)
+{
+    fds_adv_record_delete();
+    fds_gc();
+    ret_code_t err_code;
+    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
+
+    err_code = fds_record_write(&desc, &m_dummy_adv_record); // 写记录和数据
+    APP_ERROR_CHECK(err_code);
+}
+
+void fds_adv_data_read(void)
+{
+    ret_code_t err_code;
+    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
+    fds_find_token_t tok = {0};   // 保存秘钥的令牌清零
+    uint32_t *data = 0;
+    uint16_t data_count = 0;
+
+    err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        fds_flash_record_t config = {0};
+
+        err_code = fds_record_open(&desc, &config);
+        APP_ERROR_CHECK(err_code);
+
+        data = (uint32_t *)config.p_data;
+
+        for (int i = 0; i < config.p_header->length_words;)
+        {
+            adv_storage_data[data_count].bloodGluose = data[i];
+            adv_storage_data[data_count].libreLife = data[i + 1];
+            adv_storage_data[data_count].timeStamp = data[i + 2];
+            i = i + 3;
+            data_count++;
+        }
+
+        for (int i = 0; i < LIBRE_DATA_LEN; i++)
+        {
+            his_payload.data[i].bloodGluose = (uint16_t)adv_storage_data[i].bloodGluose;
+            his_payload.data[i].libreLife = adv_storage_data[i].libreLife;
+            his_payload.data[i].timeStamp = adv_storage_data[i].timeStamp;
+        }
+        /* Close the record when done reading. */
+        err_code = fds_record_close(&desc); // 关闭记录
+        APP_ERROR_CHECK(err_code);
+    }
+    else
+    {
+        err_code = fds_record_write(&desc, &m_dummy_adv_record); // 写记录和数据
+        APP_ERROR_CHECK(err_code);
+    }
+}
+
+bool fds_dn_record_delete(void)
+{
+    ret_code_t err_code;
+    fds_find_token_t tok = {0};
+    fds_record_desc_t desc = {0};
+    err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        err_code = fds_record_delete(&desc);
+        if (err_code != NRF_SUCCESS)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    else
+    {
+        /* No records left to delete. */
+        return false;
+    }
+}
+
+void fds_dn_update(void)
+{
+    // 先删除原先的记录
+    fds_dn_record_delete();
+    // 释放空间
+    fds_gc();
+    ret_code_t err_code;
+    fds_record_desc_t desc = {0};                                        // 用来操作记录的描述符结构清零
+    err_code = fds_record_write(&desc, &m_dummy_adc_data_number_record); // 写记录和数据
+    APP_ERROR_CHECK(err_code);
+}
+
+void fds_dn_read(void)
+{
+    ret_code_t err_code;
+    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
+    fds_find_token_t tok = {0};   // 保存秘钥的令牌清零
+    uint32_t *data = 0;
+
+    err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        fds_flash_record_t config = {0};
+
+        err_code = fds_record_open(&desc, &config);
+        APP_ERROR_CHECK(err_code);
+
+        data = (uint32_t *)config.p_data;
+
+        dataNumber = data[0];
+
+        /* Close the record when done reading. */
+        err_code = fds_record_close(&desc); // 关闭记录
+        APP_ERROR_CHECK(err_code);
+    }
+    else
+    {
+        err_code = fds_record_write(&desc, &m_dummy_adc_data_number_record); // 写记录和数据
+        APP_ERROR_CHECK(err_code);
+    }
+}
 
 /**@brief Function for the Timer initialization.
  *
@@ -331,13 +632,53 @@ static void pm_evt_handler(pm_evt_t const *p_evt)
  */
 APP_TIMER_DEF(m_app_timer_id);
 #define TIME_LEVEL_MEAS_INTERVAL APP_TIMER_TICKS(1000)
-
 static void time_update(void)
 {
-    // static uint8_t time_level = 0;
+    static uint32_t pre_tick = 0;
+    uint8_t end_code = 0;
+    ret_code_t err_code;
 
-    // time_level++;
-    // NRF_LOG_INFO("%d", (uint8_t)time_level);
+    cur_TZ++;
+
+    if (cur_TZ - pre_tick > 60)
+    {
+        pre_tick = cur_TZ;
+        adv_data_refresh();
+    }
+    if (his_payload_send_flag == 1)
+    {
+        end_code = drs_adv_his_notify_send(&his_payload);
+        if (end_code == 0) // 检测到发送结束
+        {
+            his_payload_send_flag = 0;
+        }
+    }
+
+    switch (charge_status)
+    {
+    case 0:
+        if (nrf_gpio_pin_read(CHG_PIN) == 0)
+        {
+            charge_status = 1;
+            err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_0);
+            APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("DEVICE IN CHARGING...");
+        }
+        break;
+    case 1:
+        if (nrf_gpio_pin_read(CHG_PIN) != 0)
+        {
+            charge_status = 2;
+            err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_3);
+            APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("DEVICE FULL OF CHARGE");
+        }
+        break;
+    case 2:
+        break;
+    default:
+        break;
+    }
 }
 static void timer_timeout_handler(void *p_context)
 {
@@ -544,6 +885,7 @@ static void errs_profile_evt_handler()
 static void tss_profile_evt_handler(uint32_t timestamp)
 {
     cur_TZ = timestamp;
+    fds_tz_update();
     NRF_LOG_INFO("TSS: %d", timestamp);
 }
 
@@ -554,7 +896,7 @@ static void services_init(void)
     ret_code_t err_code;
     // ble_nus_init_t nus_init;
     nrf_ble_qwr_init_t qwr_init = {0};
-    // ble_dfu_buttonless_init_t dfus_init = {0};
+    ble_dfu_buttonless_init_t dfus_init = {0};
     DrsProfileCallback_t drs_init = {0};
     ErrsProfileCallback_t errs_init = {0};
     TssProfileCallback_t tss_init = {0};
@@ -589,6 +931,60 @@ static void services_init(void)
     err_code = ble_dfu_buttonless_init(&dfus_init);
     APP_ERROR_CHECK(err_code);
 #endif
+}
+// 5 min intervel
+uint32_t libreLife = 0;
+
+static void adv_data_refresh(void)
+{
+    DrsRTPayload_s rt_payload;
+    // DrsHistorPayload_s his_payload;
+    uint16_t err_payload = 0;
+    dataNumber++;
+    if (libreLife == 0)
+    {
+        libreLife = MAX_LIBRE_LIFE;
+    }
+    else
+    {
+        libreLife--;
+    }
+
+    // rt data
+    rt_payload.type = REAL_TIME_DATA;
+    rt_payload.len = 17;
+    rt_payload.totalDataNumber = 0X01;
+    rt_payload.curSensorSta = dataNumber % 2;
+    rt_payload.data.bloodGluose = rand() % 200 + 20;
+    rt_payload.data.libreLife = libreLife;
+    rt_payload.data.timeStamp = cur_TZ;
+
+    // his data
+    his_payload.type = HISTORY_DATA;
+    his_payload.len = 17;
+    his_payload.totalDataNumber = dataNumber;
+    his_payload.curSensorSta = dataNumber % 2;
+    his_payload.data[dataNumber - 1].bloodGluose = rt_payload.data.bloodGluose;
+    his_payload.data[dataNumber - 1].libreLife = rt_payload.data.libreLife;
+    his_payload.data[dataNumber - 1].timeStamp = rt_payload.data.timeStamp;
+    adv_storage_data[dataNumber - 1].bloodGluose = his_payload.data[dataNumber - 1].bloodGluose;
+    adv_storage_data[dataNumber - 1].libreLife = his_payload.data[dataNumber - 1].libreLife;
+    adv_storage_data[dataNumber - 1].timeStamp = his_payload.data[dataNumber - 1].timeStamp;
+    fds_dn_update();
+    fds_adv_data_update();
+
+    if (dataNumber % 12 != 0)
+    {
+        drs_adv_rt_notify_send(&rt_payload);
+    }
+    else
+    {
+        dataNumber = 0;
+        his_payload_send_flag = 1;
+    }
+
+    err_payload = dataNumber % 3;
+    errs_adv_notify_send(&err_payload);
 }
 
 /**@brief Function for handling the Connection Parameters Module.
@@ -693,13 +1089,13 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     {
     case BLE_ADV_EVT_FAST:
         NRF_LOG_INFO("Fast advertising.");
-        err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
+        // err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
         APP_ERROR_CHECK(err_code);
         break;
 
     case BLE_ADV_EVT_IDLE:
         NRF_LOG_INFO("Sleep Mode.");
-        sleep_mode_enter();
+        // sleep_mode_enter();
         break;
 
     default:
@@ -720,13 +1116,15 @@ static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context)
     {
     case BLE_GAP_EVT_DISCONNECTED:
         NRF_LOG_INFO("Disconnected.");
+        device_connect_sta = 0;
         // LED indication will be changed when advertising starts.
         break;
 
     case BLE_GAP_EVT_CONNECTED:
         NRF_LOG_INFO("Connected.");
-        err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
-        APP_ERROR_CHECK(err_code);
+        device_connect_sta = 1;
+        // err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
+        // APP_ERROR_CHECK(err_code);
         m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
         err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
         APP_ERROR_CHECK(err_code);
@@ -1102,32 +1500,37 @@ int main(void)
     conn_params_init();
     peer_manager_init();
 
+    fds_init_function();
+    fds_tz_read();
+    fds_adv_data_read();
+    fds_dn_read();
+
     // Start execution.
     NRF_LOG_INFO("miaomiao3 device started.");
     application_timers_start();
 
     advertising_start(erase_bonds);
 
-    rfalAnalogConfigInitialize();
-    if (rfalInitialize() != ERR_NONE)
-    {
-        platformLog("RFAL initialization failed..\r\n");
-    }
-    else
-    {
-        platformLog("RFAL initialization succeeded..\r\n");
-    }
-    for (int i = 0; i < 64; i++)
-    {
-        st25r3911ReadRegister(ST25R3911_REG_IO_CONF1 + i, &register_data[i]);
-    }
+    // rfalAnalogConfigInitialize();
+    // if (rfalInitialize() != ERR_NONE)
+    // {
+    //     platformLog("RFAL initialization failed..\r\n");
+    // }
+    // else
+    // {
+    //     platformLog("RFAL initialization succeeded..\r\n");
+    // }
+    // for (int i = 0; i < 64; i++)
+    // {
+    //     st25r3911ReadRegister(ST25R3911_REG_IO_CONF1 + i, &register_data[i]);
+    // }
 
     // Enter main loop.
     for (;;)
     {
         idle_state_handle();
-        rfalWorker();
-        workCycle();
+        // rfalWorker();
+        // workCycle();
     }
 }
 

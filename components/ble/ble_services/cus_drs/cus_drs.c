@@ -4,9 +4,11 @@
 #include "sdk_common.h"
 #if NRF_MODULE_ENABLED(BLE_DRS)
 #include "ble_srv_common.h"
+#include <stdlib.h>
 
 #include "cus_drs.h"
 #include "nrf_log.h"
+#include "nrf_delay.h"
 
 /*********************************************************************
  * LOCAL VARIABLES
@@ -61,6 +63,70 @@ uint32_t ble_drs_on_data_send(DrsProfile_t *p_drs, void *p_data, uint16_t length
         errCode = BLE_ERROR_INVALID_CONN_HANDLE;
     }
     return errCode;
+}
+uint8_t drs_adv_rt_notify_send(DrsRTPayload_s *data)
+{
+    uint8_t tmp[19];
+    tmp[0] = data->type;
+    tmp[1] = data->len;
+    tmp[2] = 0x01 << 8 & 0xff;
+    tmp[3] = 0x01 << 0 & 0xff;
+    tmp[4] = data->totalDataNumber << 8 & 0xff;
+    tmp[5] = data->totalDataNumber << 0 & 0xff;
+    tmp[6] = data->curSensorSta;
+    tmp[7] = data->battery << 8 & 0xff;
+    tmp[8] = data->battery << 0 & 0xff;
+    tmp[9] = data->data.bloodGluose << 8 & 0xff;
+    tmp[10] = data->data.bloodGluose << 0 & 0xff;
+    tmp[11] = data->data.libreLife << 24 & 0xff;
+    tmp[12] = data->data.libreLife << 16 & 0xff;
+    tmp[13] = data->data.libreLife << 8 & 0xff;
+    tmp[14] = data->data.libreLife << 0 & 0xff;
+    tmp[15] = data->data.timeStamp << 24 & 0xff;
+    tmp[16] = data->data.timeStamp << 16 & 0xff;
+    tmp[17] = data->data.timeStamp << 8 & 0xff;
+    tmp[18] = data->data.timeStamp << 0 & 0xff;
+    ble_drs_on_data_send(&m_drs, (void *)tmp, 19);
+
+    return 0;
+}
+uint8_t drs_adv_his_notify_send(DrsHisPayload_s *data)
+{
+    uint8_t tmp[19];
+    static uint16_t cur_data_number = 0;
+    tmp[0] = data->type;
+    tmp[1] = data->len;
+    tmp[4] = data->totalDataNumber << 8 & 0xff;
+    tmp[5] = data->totalDataNumber << 0 & 0xff;
+    tmp[6] = data->curSensorSta;
+    tmp[7] = data->battery << 8 & 0xff;
+    tmp[8] = data->battery << 0 & 0xff;
+
+    if (cur_data_number != data->totalDataNumber)
+    {
+        cur_data_number++;
+        tmp[2] = cur_data_number << 8 & 0xff;
+        tmp[3] = cur_data_number << 0 & 0xff;
+        tmp[9] = data->data[cur_data_number - 1].bloodGluose << 8 & 0xff;
+        tmp[10] = data->data[cur_data_number - 1].bloodGluose << 0 & 0xff;
+        tmp[11] = data->data[cur_data_number - 1].libreLife << 24 & 0xff;
+        tmp[12] = data->data[cur_data_number - 1].libreLife << 16 & 0xff;
+        tmp[13] = data->data[cur_data_number - 1].libreLife << 8 & 0xff;
+        tmp[14] = data->data[cur_data_number - 1].libreLife << 0 & 0xff;
+        tmp[15] = data->data[cur_data_number - 1].timeStamp << 24 & 0xff;
+        tmp[16] = data->data[cur_data_number - 1].timeStamp << 16 & 0xff;
+        tmp[17] = data->data[cur_data_number - 1].timeStamp << 8 & 0xff;
+        tmp[18] = data->data[cur_data_number - 1].timeStamp << 0 & 0xff;
+        ble_drs_on_data_send(&m_drs, (void *)tmp, 19);
+    }
+
+    if (cur_data_number == data->totalDataNumber)
+    {
+        cur_data_number = 0;
+        return 0;
+    }
+
+    return 1;
 }
 
 /*********************************************************************

@@ -141,7 +141,7 @@ void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t *val, uint8_t length)
     ST_MEMCPY(val, &comBuf[ST25R3911_CMD_LEN], length);            /* Copy from local buf to output buffer and skip cmd byte */
 
 #else  /* ST25R391X_COM_SINGLETXRX */
-    tmp = (uint8_t *)malloc(sizeof(uint8_t) * (length + 2));
+    tmp = (uint8_t *)malloc(sizeof(uint8_t) * (length + 1));
     /* Since the result comes one byte later, let's first transmit the adddress with discarding the result */
     // platformSpiTxRx(&cmd, NULL, ST25R3911_CMD_LEN);
     // platformSpiTxRx(NULL, val, length);
