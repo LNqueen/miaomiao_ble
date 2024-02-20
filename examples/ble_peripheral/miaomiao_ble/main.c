@@ -226,6 +226,7 @@ static void gpio_init(void)
     APP_ERROR_CHECK(err_code);
 
     nrf_gpio_cfg_input(CHG_PIN, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(PPR_PIN, NRF_GPIO_PIN_PULLUP);
 }
 
 void IRQ_Enable(void)
@@ -657,7 +658,7 @@ static void time_update(void)
     switch (charge_status)
     {
     case 0:
-        if (nrf_gpio_pin_read(CHG_PIN) == 0)
+        if (nrf_gpio_pin_read(CHG_PIN) == 0 && nrf_gpio_pin_read(PPR_PIN) == 0)
         {
             charge_status = 1;
             err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_0);
@@ -666,15 +667,29 @@ static void time_update(void)
         }
         break;
     case 1:
-        if (nrf_gpio_pin_read(CHG_PIN) != 0)
+        if (nrf_gpio_pin_read(CHG_PIN) != 0 && nrf_gpio_pin_read(PPR_PIN) == 0)
         {
             charge_status = 2;
             err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_3);
             APP_ERROR_CHECK(err_code);
             NRF_LOG_INFO("DEVICE FULL OF CHARGE");
         }
+        else if (nrf_gpio_pin_read(PPR_PIN) != 0)
+        {
+            charge_status = 0;
+            err_code = bsp_indication_set(BSP_INDICATE_IDLE);
+            APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("DISCONNETED WITHOUT FULL OF CHARGE");
+        }
         break;
     case 2:
+        if (nrf_gpio_pin_read(PPR_PIN) != 0)
+        {
+            charge_status = 0;
+            err_code = bsp_indication_set(BSP_INDICATE_IDLE);
+            APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("DISCONNETED WITH FULL OF CHARGE");
+        }
         break;
     default:
         break;
@@ -1083,14 +1098,20 @@ static void sleep_mode_enter(void)
  */
 static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
 {
-    ret_code_t err_code;
+    // ret_code_t err_code;
 
     switch (ble_adv_evt)
     {
     case BLE_ADV_EVT_FAST:
         NRF_LOG_INFO("Fast advertising.");
         // err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
-        APP_ERROR_CHECK(err_code);
+        // APP_ERROR_CHECK(err_code);
+        break;
+
+    case BLE_ADV_EVT_SLOW:
+        NRF_LOG_INFO("Slow advertising.");
+        // err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
+        // APP_ERROR_CHECK(err_code);
         break;
 
     case BLE_ADV_EVT_IDLE:
@@ -1400,6 +1421,10 @@ static void advertising_init(void)
     init.config.ble_adv_fast_enabled = true;
     init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
     init.config.ble_adv_fast_timeout = APP_ADV_DURATION;
+
+    init.config.ble_adv_slow_enabled = true;
+    init.config.ble_adv_slow_interval = APP_ADV_INTERVAL;
+    init.config.ble_adv_slow_timeout = 0;
 
     init.evt_handler = on_adv_evt;
 

@@ -399,7 +399,7 @@ static uint32_t bsp_led_indication(bsp_indication_t indicate)
         break;
 
     case BSP_INDICATE_USER_STATE_0:
-        // in advertising blink LED_0
+        // in charging mode, blink green and red LEDs
         if (bsp_board_led_state_get(BSP_LED_GREE))
         {
             bsp_board_led_off(BSP_LED_GREE);
@@ -428,7 +428,9 @@ static uint32_t bsp_led_indication(bsp_indication_t indicate)
         break;
 
     case BSP_INDICATE_USER_STATE_3:
+        // full charge, light green LED
         bsp_board_led_on(BSP_LED_GREE);
+        m_stable_state = indicate;
         break;
 
     case BSP_INDICATE_USER_STATE_ON:
