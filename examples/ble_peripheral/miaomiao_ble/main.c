@@ -212,6 +212,12 @@ static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t actio
     st25r3911Isr();
 }
 
+static void power_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+    NRF_LOG_INFO("system restart\r\n");
+    NVIC_SystemReset();
+}
+
 static void gpio_init(void)
 {
     ret_code_t err_code;
@@ -225,8 +231,17 @@ static void gpio_init(void)
     err_code = nrf_drv_gpiote_in_init(IRQ_PIN, &in_config, in_pin_handler);
     APP_ERROR_CHECK(err_code);
 
+    // riseing edge trigger
+    nrf_drv_gpiote_in_config_t power_config = GPIOTE_CONFIG_IN_SENSE_TOGGLE(true);
+    power_config.pull = NRF_GPIO_PIN_PULLUP;
+
+    err_code = nrf_drv_gpiote_in_init(PPR_PIN, &power_config, power_pin_handler);
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_gpiote_in_event_enable(PPR_PIN, true);
+
     nrf_gpio_cfg_input(CHG_PIN, NRF_GPIO_PIN_PULLUP);
-    nrf_gpio_cfg_input(PPR_PIN, NRF_GPIO_PIN_PULLUP);
+    // nrf_gpio_cfg_input(PPR_PIN, NRF_GPIO_PIN_PULLUP);
 }
 
 void IRQ_Enable(void)
@@ -386,7 +401,7 @@ static void fds_evt_handler(fds_evt_t const *p_evt)
     {
         if (p_evt->result == NRF_SUCCESS)
         {
-            NRF_LOG_INFO("Write File ID:\t0x%04x", p_evt->write.file_id);
+            NRF_LOG_INFO(":\t0x%04x", p_evt->write.file_id);
         }
     }
     break;
@@ -655,10 +670,11 @@ static void time_update(void)
         }
     }
 
+    // NVIC_SystemReset();
     switch (charge_status)
     {
     case 0:
-        if (nrf_gpio_pin_read(CHG_PIN) == 0 && nrf_gpio_pin_read(PPR_PIN) == 0)
+        if (nrf_gpio_pin_read(CHG_PIN) == 0)
         {
             charge_status = 1;
             err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_0);
@@ -667,29 +683,15 @@ static void time_update(void)
         }
         break;
     case 1:
-        if (nrf_gpio_pin_read(CHG_PIN) != 0 && nrf_gpio_pin_read(PPR_PIN) == 0)
+        if (nrf_gpio_pin_read(CHG_PIN) != 0)
         {
             charge_status = 2;
             err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_3);
             APP_ERROR_CHECK(err_code);
             NRF_LOG_INFO("DEVICE FULL OF CHARGE");
         }
-        else if (nrf_gpio_pin_read(PPR_PIN) != 0)
-        {
-            charge_status = 0;
-            err_code = bsp_indication_set(BSP_INDICATE_IDLE);
-            APP_ERROR_CHECK(err_code);
-            NRF_LOG_INFO("DISCONNETED WITHOUT FULL OF CHARGE");
-        }
         break;
     case 2:
-        if (nrf_gpio_pin_read(PPR_PIN) != 0)
-        {
-            charge_status = 0;
-            err_code = bsp_indication_set(BSP_INDICATE_IDLE);
-            APP_ERROR_CHECK(err_code);
-            NRF_LOG_INFO("DISCONNETED WITH FULL OF CHARGE");
-        }
         break;
     default:
         break;
@@ -1424,7 +1426,7 @@ static void advertising_init(void)
 
     init.config.ble_adv_slow_enabled = true;
     init.config.ble_adv_slow_interval = APP_ADV_INTERVAL;
-    init.config.ble_adv_slow_timeout = 0;
+    init.config.ble_adv_slow_timeout = APP_ADV_DURATION;
 
     init.evt_handler = on_adv_evt;
 
@@ -1501,6 +1503,15 @@ static void advertising_start(bool erase_bonds)
     }
 }
 
+static void device_start(void)
+{
+    ret_code_t err_code = NRF_SUCCESS;
+
+    NRF_LOG_INFO("miaomiao3 device started.");
+    err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_1);
+    APP_ERROR_CHECK(err_code);
+}
+
 /**@brief Function for application main entry.
  */
 uint8_t register_data[64] = {0};
@@ -1531,7 +1542,7 @@ int main(void)
     fds_dn_read();
 
     // Start execution.
-    NRF_LOG_INFO("miaomiao3 device started.");
+    device_start();
     application_timers_start();
 
     advertising_start(erase_bonds);

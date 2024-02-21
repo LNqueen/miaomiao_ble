@@ -400,7 +400,7 @@ static uint32_t bsp_led_indication(bsp_indication_t indicate)
 
     case BSP_INDICATE_USER_STATE_0:
         // in charging mode, blink green and red LEDs
-        if (bsp_board_led_state_get(BSP_LED_GREE))
+        if (bsp_board_led_state_get(BSP_LED_RED))
         {
             bsp_board_led_off(BSP_LED_GREE);
             bsp_board_led_off(BSP_LED_RED);
@@ -418,7 +418,25 @@ static uint32_t bsp_led_indication(bsp_indication_t indicate)
         break;
 
     case BSP_INDICATE_USER_STATE_1:
-        leds_off();
+        if (bsp_board_led_state_get(BSP_LED_RED))
+        {
+            bsp_board_led_off(BSP_LED_RED);
+
+            bsp_board_led_on(BSP_LED_GREE);
+            err_code = app_timer_start(m_bsp_leds_tmr, APP_TIMER_TICKS(50), NULL);
+        }
+        else
+        {
+            if (bsp_board_led_state_get(BSP_LED_GREE))
+            {
+                bsp_board_led_off(BSP_LED_GREE);
+            }
+            else
+            {
+                bsp_board_led_on(BSP_LED_RED);
+                err_code = app_timer_start(m_bsp_leds_tmr, APP_TIMER_TICKS(800), NULL);
+            }
+        }
         m_stable_state = indicate;
         break;
 
