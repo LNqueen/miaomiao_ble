@@ -201,6 +201,8 @@ static fds_record_t const m_dummy_adc_data_number_record = {
     .data.length_words = (sizeof(dataNumber) + 3) / sizeof(uint32_t),
 };
 
+uint8_t fds_gc_flag = 0;
+
 DrsHisPayload_s his_payload;
 uint8_t his_payload_send_flag = 0;
 
@@ -434,38 +436,66 @@ void fds_init_function(void)
     fds_stat_t stat = {0};
     err_code = fds_stat(&stat);
     APP_ERROR_CHECK(err_code);
-}
-
-bool fds_tz_record_delete(void)
-{
-    ret_code_t err_code;
-    fds_find_token_t tok = {0};
-    fds_record_desc_t desc = {0};
-    err_code = fds_record_find(CONFIG_TZ_FILE, CONFIG_TZ_KEY, &desc, &tok);
-    if (err_code == NRF_SUCCESS)
+    NRF_LOG_INFO("Found %d valid records.", stat.valid_records);
+    NRF_LOG_INFO("Found %d dirty records (ready to be garbage collected).", stat.dirty_records);
+    if (stat.dirty_records >= 10)
     {
-        err_code = fds_record_delete(&desc);
-        if (err_code != NRF_SUCCESS)
-        {
-            return false;
-        }
-
-        return true;
-    }
-    else
-    {
-        /* No records left to delete. */
-        return false;
+        fds_gc();
+        NRF_LOG_INFO("Too many dirty records, garbage collecting.");
     }
 }
+
+// bool fds_tz_record_delete(void)
+// {
+//     ret_code_t err_code;
+//     fds_find_token_t tok = {0};
+//     fds_record_desc_t desc = {0};
+//     err_code = fds_record_find(CONFIG_TZ_FILE, CONFIG_TZ_KEY, &desc, &tok);
+//     if (err_code == NRF_SUCCESS)
+//     {
+//         err_code = fds_record_delete(&desc);
+//         if (err_code != NRF_SUCCESS)
+//         {
+//             return false;
+//         }
+
+//         return true;
+//     }
+//     else
+//     {
+//         /* No records left to delete. */
+//         return false;
+//     }
+// }
 
 void fds_tz_update(void)
 {
-    fds_tz_record_delete();
-    fds_gc();
+    static uint8_t update_count = 0;
     ret_code_t err_code;
-    fds_record_desc_t desc = {0};                           // 用来操作记录的描述符结构清零
-    err_code = fds_record_write(&desc, &m_dummy_tz_record); // 写记录和数据
+    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
+    fds_find_token_t tok = {0};   // 保存秘钥的令牌清零
+    err_code = fds_record_find(CONFIG_TZ_FILE, CONFIG_TZ_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        err_code = fds_record_update(&desc, &m_dummy_tz_record);
+        if ((err_code != NRF_SUCCESS) && (err_code == FDS_ERR_NO_SPACE_IN_FLASH))
+        {
+            NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
+        }
+        else
+        {
+            APP_ERROR_CHECK(err_code);
+        }
+    }
+    update_count++;
+    if (err_code == FDS_ERR_NO_SPACE_IN_FLASH || update_count >= 5)
+    {
+        // fds_gc();
+        update_count = 0;
+        fds_gc_flag = 1;
+        NRF_LOG_INFO("fds_gc()");
+        // err_code = fds_record_write(&desc, &m_dummy_tz_record); // 写记录和数据
+    }
     APP_ERROR_CHECK(err_code);
 }
 
@@ -494,43 +524,65 @@ void fds_tz_read(void)
     }
     else
     {
-        err_code = fds_record_write(&desc, &m_dummy_tz_record); // 写记录和数据
+        err_code = fds_record_write(&desc, &m_dummy_tz_record); // 重新写数据
         APP_ERROR_CHECK(err_code);
     }
 }
 
-bool fds_adv_record_delete(void)
-{
-    ret_code_t err_code;
-    fds_find_token_t tok = {0};
-    fds_record_desc_t desc = {0};
-    err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
-    if (err_code == NRF_SUCCESS)
-    {
-        err_code = fds_record_delete(&desc);
-        if (err_code != NRF_SUCCESS)
-        {
-            return false;
-        }
+// bool fds_adv_record_delete(void)
+// {
+//     ret_code_t err_code;
+//     fds_find_token_t tok = {0};
+//     fds_record_desc_t desc = {0};
+//     err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
+//     if (err_code == NRF_SUCCESS)
+//     {
+//         err_code = fds_record_delete(&desc);
+//         if (err_code != NRF_SUCCESS)
+//         {
+//             return false;
+//         }
 
-        return true;
-    }
-    else
-    {
-        /* No records left to delete. */
-        return false;
-    }
-}
+//         return true;
+//     }
+//     else
+//     {
+//         /* No records left to delete. */
+//         return false;
+//     }
+// }
 
 void fds_adv_data_update(void)
 {
-    fds_adv_record_delete();
-    fds_gc();
+    static uint8_t update_count = 0;
     ret_code_t err_code;
     fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
-
-    err_code = fds_record_write(&desc, &m_dummy_adv_record); // 写记录和数据
+    fds_find_token_t tok = {0};
+    err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        err_code = fds_record_update(&desc, &m_dummy_adv_record);
+        if ((err_code != NRF_SUCCESS) && (err_code == FDS_ERR_NO_SPACE_IN_FLASH))
+        {
+            NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
+        }
+        else
+        {
+            APP_ERROR_CHECK(err_code);
+        }
+    }
+    update_count++;
+    if (err_code == FDS_ERR_NO_SPACE_IN_FLASH || update_count >= 5)
+    {
+        // 释放空间
+        // fds_gc();
+        update_count = 0;
+        fds_gc_flag = 1;
+        NRF_LOG_INFO("fds_gc()");
+        // err_code = fds_record_write(&desc, &m_dummy_adv_record); // 写记录和数据
+    }
     APP_ERROR_CHECK(err_code);
+    NRF_LOG_INFO("data :%d", m_dummy_adv_record.data.length_words);
 }
 
 void fds_adv_data_read(void)
@@ -569,6 +621,7 @@ void fds_adv_data_read(void)
         /* Close the record when done reading. */
         err_code = fds_record_close(&desc); // 关闭记录
         APP_ERROR_CHECK(err_code);
+        NRF_LOG_INFO("adv data count :%d", data_count);
     }
     else
     {
@@ -577,38 +630,60 @@ void fds_adv_data_read(void)
     }
 }
 
-bool fds_dn_record_delete(void)
-{
-    ret_code_t err_code;
-    fds_find_token_t tok = {0};
-    fds_record_desc_t desc = {0};
-    err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
-    if (err_code == NRF_SUCCESS)
-    {
-        err_code = fds_record_delete(&desc);
-        if (err_code != NRF_SUCCESS)
-        {
-            return false;
-        }
+// TODO: update instead of delete and write
+// bool fds_dn_record_delete(void)
+// {
+//     ret_code_t err_code;
+//     fds_find_token_t tok = {0};
+//     fds_record_desc_t desc = {0};
+//     err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
+//     if (err_code == NRF_SUCCESS)
+//     {
+//         err_code = fds_record_delete(&desc);
+//         if (err_code != NRF_SUCCESS)
+//         {
+//             return false;
+//         }
 
-        return true;
-    }
-    else
-    {
-        /* No records left to delete. */
-        return false;
-    }
-}
+//         return true;
+//     }
+//     else
+//     {
+//         /* No records left to delete. */
+//         return false;
+//     }
+// }
 
 void fds_dn_update(void)
 {
-    // 先删除原先的记录
-    fds_dn_record_delete();
-    // 释放空间
-    fds_gc();
+    static uint8_t update_count = 0;
     ret_code_t err_code;
-    fds_record_desc_t desc = {0};                                        // 用来操作记录的描述符结构清零
-    err_code = fds_record_write(&desc, &m_dummy_adc_data_number_record); // 写记录和数据
+    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
+    fds_find_token_t tok = {0};
+    err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
+    if (err_code == NRF_SUCCESS)
+    {
+        /* Write the updated record to flash. */
+        err_code = fds_record_update(&desc, &m_dummy_adc_data_number_record);
+        if ((err_code != NRF_SUCCESS) && (err_code == FDS_ERR_NO_SPACE_IN_FLASH))
+        {
+            NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
+        }
+        else
+        {
+            APP_ERROR_CHECK(err_code);
+        }
+    }
+    update_count++;
+    if (err_code == FDS_ERR_NO_SPACE_IN_FLASH || update_count >= 5)
+    {
+        // 释放空间
+        // fds_gc();
+        update_count = 0;
+        fds_gc_flag = 1;
+        NRF_LOG_INFO("fds_gc()");
+        // err_code = fds_record_write(&desc, &m_dummy_adc_data_number_record); // 写记录和数据
+    }
     APP_ERROR_CHECK(err_code);
 }
 
@@ -958,6 +1033,12 @@ static void adv_data_refresh(void)
     // DrsHistorPayload_s his_payload;
     uint16_t err_payload = 0;
     dataNumber++;
+    // if datanumber >= the max data array size, reset the datanumber
+    if (dataNumber > LIBRE_DATA_LEN)
+    {
+        dataNumber = 0;
+    }
+
     if (libreLife == 0)
     {
         libreLife = MAX_LIBRE_LIFE;
@@ -990,6 +1071,12 @@ static void adv_data_refresh(void)
     fds_dn_update();
     fds_adv_data_update();
 
+    if (fds_gc_flag == 1)
+    {
+        fds_gc_flag = 0;
+        fds_gc();
+    }
+
     if (dataNumber % 12 != 0)
     {
         drs_adv_rt_notify_send(&rt_payload);
@@ -999,6 +1086,7 @@ static void adv_data_refresh(void)
         dataNumber = 0;
         his_payload_send_flag = 1;
     }
+    NRF_LOG_INFO("dataNumber :%d", dataNumber);
 
     err_payload = dataNumber % 3;
     errs_adv_notify_send(&err_payload);

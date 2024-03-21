@@ -6311,7 +6311,7 @@
 // <2048=> 2048
 
 #ifndef FDS_VIRTUAL_PAGE_SIZE
-#define FDS_VIRTUAL_PAGE_SIZE 2048
+#define FDS_VIRTUAL_PAGE_SIZE 1024
 #endif
 
 // <o> FDS_VIRTUAL_PAGES_RESERVED - The number of virtual flash pages that are used by other modules.
@@ -6351,7 +6351,7 @@
 // <i> Increase this value if you frequently get synchronous FDS_ERR_NO_SPACE_IN_QUEUES errors.
 
 #ifndef FDS_OP_QUEUE_SIZE
-#define FDS_OP_QUEUE_SIZE 8
+#define FDS_OP_QUEUE_SIZE 16
 #endif
 
 // </h>
