@@ -731,7 +731,7 @@ static void time_update(void)
 
     cur_TZ++;
 
-    if (cur_TZ - pre_tick > 60)
+    if (cur_TZ - pre_tick >= 60)
     {
         pre_tick = cur_TZ;
         adv_data_refresh();

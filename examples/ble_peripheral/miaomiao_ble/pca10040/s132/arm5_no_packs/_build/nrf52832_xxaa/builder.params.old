@@ -3,7 +3,7 @@
     "target": "nrf52832_xxaa",
     "toolchain": "AC5",
     "toolchainLocation": "D:\\tool\\keil\\ARM\\ARMCC",
-    "toolchainCfgFile": "c:\\Users\\10847\\.vscode\\extensions\\cl.eide-3.15.1\\res\\data\\models\\win32/arm.v5.model.json",
+    "toolchainCfgFile": "c:\\Users\\10847\\.vscode\\extensions\\cl.eide-3.16.0\\res\\data\\models\\win32/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 16,
