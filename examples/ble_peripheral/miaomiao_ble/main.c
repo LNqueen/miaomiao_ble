@@ -102,7 +102,7 @@
 #include "st25R3911_interrupt.h"
 #include "st25r3911_com.h"
 
-#define DEVICE_NAME "miaomiao3_"                           /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME "Diameter_"                            /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME "NordicSemiconductor"            /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL MSEC_TO_UNITS(300, UNIT_0_625_MS) /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
@@ -131,34 +131,19 @@
 #define DEAD_BEEF 0xDEADBEEF /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 #define SPI_INSTANCE 0
-// #define UART_TX_BUF_SIZE 256 /**< UART TX buffer size. */
-// #define UART_RX_BUF_SIZE 256 /**< UART RX buffer size. */
-
-// BLE_NUS_DEF(m_nus, NRF_SDH_BLE_TOTAL_LINK_COUNT); /**< BLE NUS service instance. */
 
 NRF_BLE_GATT_DEF(m_gatt);           /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);             /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising); /**< Advertising module instance. */
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID; /**< Handle of the current connection. */
-// static uint16_t m_ble_nus_max_data_len = BLE_GATT_ATT_MTU_DEFAULT - 3; /**< Maximum length of data (in bytes) that can be transmitted to the peer by the Nordic UART service module. */
 
-/* YOUR_JOB: Declare all services structure your application is using
- *  BLE_XYZ_DEF(m_xyz);
- */
 static volatile bool spi_xfer_done;
 const nrf_drv_rtc_t m_rtc = NRF_DRV_RTC_INSTANCE(2);
 
-// YOUR_JOB: Use UUIDs for service(s) used in your application.
-// static ble_uuid_t m_adv_uuids[] = /**< Universally unique service identifiers. */
-//     {
-//         {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE},
-// };
 static const nrf_drv_spi_t m_spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);
 
-uint32_t cur_TZ = 0;
-s_storagedata adv_storage_data[LIBRE_DATA_LEN];
-uint32_t dataNumber = 0;
+uint32_t cur_TZ = 1704038400UL;
 
 static uint8_t tx[256];
 static uint8_t rx[256];
@@ -182,29 +167,11 @@ static fds_record_t const m_dummy_tz_record = {
     .data.length_words = (sizeof(cur_TZ) + 3) / sizeof(uint32_t),
 };
 
-// adv data save
-#define ADV_DATA_FILE 0x1f01
-#define ADV_DATA_KEY 0x1f2f
-static fds_record_t const m_dummy_adv_record = {
-    .file_id = ADV_DATA_FILE,
-    .key = ADV_DATA_KEY,
-    .data.p_data = &adv_storage_data,
-    .data.length_words = (sizeof(adv_storage_data) + 3) / sizeof(uint32_t),
-};
-
-#define ADV_DATA_NUMBER_FILE 0x1f02
-#define ADV_DATA_NUMBER_KEY 0x1f3f
-static fds_record_t const m_dummy_adc_data_number_record = {
-    .file_id = ADV_DATA_NUMBER_FILE,
-    .key = ADV_DATA_NUMBER_KEY,
-    .data.p_data = &dataNumber,
-    .data.length_words = (sizeof(dataNumber) + 3) / sizeof(uint32_t),
-};
-
 uint8_t fds_gc_flag = 0;
 
-DrsHisPayload_s his_payload;
-uint8_t his_payload_send_flag = 0;
+DrsLibrePayload_s libre_payload;
+extern S_sensor_t sensor_d;
+extern uint8_t sensor_state;
 
 static void advertising_start(bool erase_bonds);
 static void adv_data_refresh(void);
@@ -265,14 +232,27 @@ void spi_event_handler(nrf_drv_spi_evt_t const *p_event, void *p_context)
 
 static void hal_spi_init(void)
 {
+    nrf_gpio_cfg_output(SPIM0_SS_PIN);
+    nrf_gpio_pin_set(SPIM0_SS_PIN);
+
     nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG;
-    spi_config.ss_pin = SPIM0_SS_PIN;
+    spi_config.ss_pin = NRF_DRV_SPI_PIN_NOT_USED;
     spi_config.miso_pin = SPIM0_MISO_PIN;
     spi_config.mosi_pin = SPIM0_MOSI_PIN;
     spi_config.sck_pin = SPIM0_SCK_PIN;
     spi_config.mode = NRF_DRV_SPI_MODE_1;
     spi_config.frequency = NRF_DRV_SPI_FREQ_2M;
     APP_ERROR_CHECK(nrf_drv_spi_init(&m_spi, &spi_config, spi_event_handler, NULL));
+}
+
+void spi0_cs_enable(void)
+{
+    nrf_gpio_pin_clear(SPIM0_SS_PIN);
+}
+
+void spi0_cs_disable(void)
+{
+    nrf_gpio_pin_set(SPIM0_SS_PIN);
 }
 
 uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
@@ -283,7 +263,14 @@ uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
     }
 
     spi_xfer_done = false;
-    APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, (rxData != NULL) ? rxData : rx, len));
+    if (len == 1)
+    {
+        APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, rx, 0));
+    }
+    else
+    {
+        APP_ERROR_CHECK(nrf_drv_spi_transfer(&m_spi, tx, len, (rxData != NULL) ? rxData : rx, len));
+    }
     while (!spi_xfer_done)
     {
     }
@@ -529,194 +516,6 @@ void fds_tz_read(void)
     }
 }
 
-// bool fds_adv_record_delete(void)
-// {
-//     ret_code_t err_code;
-//     fds_find_token_t tok = {0};
-//     fds_record_desc_t desc = {0};
-//     err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
-//     if (err_code == NRF_SUCCESS)
-//     {
-//         err_code = fds_record_delete(&desc);
-//         if (err_code != NRF_SUCCESS)
-//         {
-//             return false;
-//         }
-
-//         return true;
-//     }
-//     else
-//     {
-//         /* No records left to delete. */
-//         return false;
-//     }
-// }
-
-void fds_adv_data_update(void)
-{
-    static uint8_t update_count = 0;
-    ret_code_t err_code;
-    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
-    fds_find_token_t tok = {0};
-    err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
-    if (err_code == NRF_SUCCESS)
-    {
-        err_code = fds_record_update(&desc, &m_dummy_adv_record);
-        if ((err_code != NRF_SUCCESS) && (err_code == FDS_ERR_NO_SPACE_IN_FLASH))
-        {
-            NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
-        }
-        else
-        {
-            APP_ERROR_CHECK(err_code);
-        }
-    }
-    update_count++;
-    if (err_code == FDS_ERR_NO_SPACE_IN_FLASH || update_count >= 5)
-    {
-        // 释放空间
-        // fds_gc();
-        update_count = 0;
-        fds_gc_flag = 1;
-        NRF_LOG_INFO("fds_gc()");
-        // err_code = fds_record_write(&desc, &m_dummy_adv_record); // 写记录和数据
-    }
-    APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("data :%d", m_dummy_adv_record.data.length_words);
-}
-
-void fds_adv_data_read(void)
-{
-    ret_code_t err_code;
-    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
-    fds_find_token_t tok = {0};   // 保存秘钥的令牌清零
-    uint32_t *data = 0;
-    uint16_t data_count = 0;
-
-    err_code = fds_record_find(ADV_DATA_FILE, ADV_DATA_KEY, &desc, &tok);
-    if (err_code == NRF_SUCCESS)
-    {
-        fds_flash_record_t config = {0};
-
-        err_code = fds_record_open(&desc, &config);
-        APP_ERROR_CHECK(err_code);
-
-        data = (uint32_t *)config.p_data;
-
-        for (int i = 0; i < config.p_header->length_words;)
-        {
-            adv_storage_data[data_count].bloodGluose = data[i];
-            adv_storage_data[data_count].libreLife = data[i + 1];
-            adv_storage_data[data_count].timeStamp = data[i + 2];
-            i = i + 3;
-            data_count++;
-        }
-
-        for (int i = 0; i < LIBRE_DATA_LEN; i++)
-        {
-            his_payload.data[i].bloodGluose = (uint16_t)adv_storage_data[i].bloodGluose;
-            his_payload.data[i].libreLife = adv_storage_data[i].libreLife;
-            his_payload.data[i].timeStamp = adv_storage_data[i].timeStamp;
-        }
-        /* Close the record when done reading. */
-        err_code = fds_record_close(&desc); // 关闭记录
-        APP_ERROR_CHECK(err_code);
-        NRF_LOG_INFO("adv data count :%d", data_count);
-    }
-    else
-    {
-        err_code = fds_record_write(&desc, &m_dummy_adv_record); // 写记录和数据
-        APP_ERROR_CHECK(err_code);
-    }
-}
-
-// TODO: update instead of delete and write
-// bool fds_dn_record_delete(void)
-// {
-//     ret_code_t err_code;
-//     fds_find_token_t tok = {0};
-//     fds_record_desc_t desc = {0};
-//     err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
-//     if (err_code == NRF_SUCCESS)
-//     {
-//         err_code = fds_record_delete(&desc);
-//         if (err_code != NRF_SUCCESS)
-//         {
-//             return false;
-//         }
-
-//         return true;
-//     }
-//     else
-//     {
-//         /* No records left to delete. */
-//         return false;
-//     }
-// }
-
-void fds_dn_update(void)
-{
-    static uint8_t update_count = 0;
-    ret_code_t err_code;
-    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
-    fds_find_token_t tok = {0};
-    err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
-    if (err_code == NRF_SUCCESS)
-    {
-        /* Write the updated record to flash. */
-        err_code = fds_record_update(&desc, &m_dummy_adc_data_number_record);
-        if ((err_code != NRF_SUCCESS) && (err_code == FDS_ERR_NO_SPACE_IN_FLASH))
-        {
-            NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
-        }
-        else
-        {
-            APP_ERROR_CHECK(err_code);
-        }
-    }
-    update_count++;
-    if (err_code == FDS_ERR_NO_SPACE_IN_FLASH || update_count >= 5)
-    {
-        // 释放空间
-        // fds_gc();
-        update_count = 0;
-        fds_gc_flag = 1;
-        NRF_LOG_INFO("fds_gc()");
-        // err_code = fds_record_write(&desc, &m_dummy_adc_data_number_record); // 写记录和数据
-    }
-    APP_ERROR_CHECK(err_code);
-}
-
-void fds_dn_read(void)
-{
-    ret_code_t err_code;
-    fds_record_desc_t desc = {0}; // 用来操作记录的描述符结构清零
-    fds_find_token_t tok = {0};   // 保存秘钥的令牌清零
-    uint32_t *data = 0;
-
-    err_code = fds_record_find(ADV_DATA_NUMBER_FILE, ADV_DATA_NUMBER_KEY, &desc, &tok);
-    if (err_code == NRF_SUCCESS)
-    {
-        fds_flash_record_t config = {0};
-
-        err_code = fds_record_open(&desc, &config);
-        APP_ERROR_CHECK(err_code);
-
-        data = (uint32_t *)config.p_data;
-
-        dataNumber = data[0];
-
-        /* Close the record when done reading. */
-        err_code = fds_record_close(&desc); // 关闭记录
-        APP_ERROR_CHECK(err_code);
-    }
-    else
-    {
-        err_code = fds_record_write(&desc, &m_dummy_adc_data_number_record); // 写记录和数据
-        APP_ERROR_CHECK(err_code);
-    }
-}
-
 /**@brief Function for the Timer initialization.
  *
  * @details Initializes the timer module. This creates and starts application timers.
@@ -726,22 +525,17 @@ APP_TIMER_DEF(m_app_timer_id);
 static void time_update(void)
 {
     static uint32_t pre_tick = 0;
-    uint8_t end_code = 0;
+    //    uint8_t end_code = 0;
     ret_code_t err_code;
 
     cur_TZ++;
 
-    if (cur_TZ - pre_tick >= 60)
+    if (sensor_state == 1)
     {
-        pre_tick = cur_TZ;
-        adv_data_refresh();
-    }
-    if (his_payload_send_flag == 1)
-    {
-        end_code = drs_adv_his_notify_send(&his_payload);
-        if (end_code == 0) // 检测到发送结束
+        if (cur_TZ - pre_tick >= 60)
         {
-            his_payload_send_flag = 0;
+            pre_tick = cur_TZ;
+            adv_data_refresh();
         }
     }
 
@@ -782,11 +576,6 @@ static void timer_timeout_handler(void *p_context)
 // #define TIME_SYSTICK_INTERVAL APP_TIMER_TICKS(1)
 uint32_t my_systick = 0;
 
-// static void systick_timeout_handler(void *p_context)
-// {
-//     UNUSED_PARAMETER(p_context);
-//     my_systick++;
-// }
 static void timers_init(void)
 {
     // Initialize timer module.
@@ -804,8 +593,6 @@ static void timers_init(void)
        APP_ERROR_CHECK(err_code); */
     err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
     APP_ERROR_CHECK(err_code);
-    // err_code = app_timer_create(&m_systick_id, APP_TIMER_MODE_REPEATED, systick_timeout_handler);
-    // APP_ERROR_CHECK(err_code);
 }
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
@@ -903,32 +690,6 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
     APP_ERROR_HANDLER(nrf_error);
 }
 
-/**@brief Function for handling the YYY Service events.
- * YOUR_JOB implement a service handler function depending on the event the service you are using can generate
- *
- * @details This function will be called for all YY Service events which are passed to
- *          the application.
- *
- * @param[in]   p_yy_service   YY Service structure.
- * @param[in]   p_evt          Event received from the YY Service.
- *
- *
-static void on_yys_evt(ble_yy_service_t     * p_yy_service,
-                       ble_yy_service_evt_t * p_evt)
-{
-    switch (p_evt->evt_type)
-    {
-        case BLE_YY_NAME_EVT_WRITE:
-            APPL_LOG("[APPL]: charact written with value %s. ", p_evt->params.char_xx.value.p_str);
-            break;
-
-        default:
-            // No implementation needed.
-            break;
-    }
-}
-*/
-
 #if (BLE_DFU_ENABLED == 1)
 static void ble_dfu_evt_handler(ble_dfu_buttonless_evt_type_t event)
 {
@@ -1025,71 +786,23 @@ static void services_init(void)
 #endif
 }
 // 5 min intervel
-uint32_t libreLife = 0;
-
 static void adv_data_refresh(void)
 {
-    DrsRTPayload_s rt_payload;
-    // DrsHistorPayload_s his_payload;
-    uint16_t err_payload = 0;
-    dataNumber++;
-    // if datanumber >= the max data array size, reset the datanumber
-    if (dataNumber > LIBRE_DATA_LEN)
-    {
-        dataNumber = 0;
-    }
+    memcpy(libre_payload.data, sensor_d.fram, sizeof(sensor_d.fram));
+    drs_adv_libre_notify_send(&libre_payload);
+}
 
-    if (libreLife == 0)
-    {
-        libreLife = MAX_LIBRE_LIFE;
-    }
-    else
-    {
-        libreLife--;
-    }
+static void err_code_update(void)
+{
+    static uint16_t err_payload = 0, pre_err_code = 0;
 
-    // rt data
-    rt_payload.type = REAL_TIME_DATA;
-    rt_payload.len = 17;
-    rt_payload.totalDataNumber = 0X01;
-    rt_payload.curSensorSta = dataNumber % 2;
-    rt_payload.data.bloodGluose = rand() % 200 + 20;
-    rt_payload.data.libreLife = libreLife;
-    rt_payload.data.timeStamp = cur_TZ;
+    err_payload = (sensor_state == 0) ? 1 : 0;
 
-    // his data
-    his_payload.type = HISTORY_DATA;
-    his_payload.len = 17;
-    his_payload.totalDataNumber = dataNumber;
-    his_payload.curSensorSta = dataNumber % 2;
-    his_payload.data[dataNumber - 1].bloodGluose = rt_payload.data.bloodGluose;
-    his_payload.data[dataNumber - 1].libreLife = rt_payload.data.libreLife;
-    his_payload.data[dataNumber - 1].timeStamp = rt_payload.data.timeStamp;
-    adv_storage_data[dataNumber - 1].bloodGluose = his_payload.data[dataNumber - 1].bloodGluose;
-    adv_storage_data[dataNumber - 1].libreLife = his_payload.data[dataNumber - 1].libreLife;
-    adv_storage_data[dataNumber - 1].timeStamp = his_payload.data[dataNumber - 1].timeStamp;
-    fds_dn_update();
-    fds_adv_data_update();
-
-    if (fds_gc_flag == 1)
+    if (pre_err_code != err_payload)
     {
-        fds_gc_flag = 0;
-        fds_gc();
+        pre_err_code = err_payload;
+        errs_adv_notify_send(&err_payload);
     }
-
-    if (dataNumber % 12 != 0)
-    {
-        drs_adv_rt_notify_send(&rt_payload);
-    }
-    else
-    {
-        dataNumber = 0;
-        his_payload_send_flag = 1;
-    }
-    NRF_LOG_INFO("dataNumber :%d", dataNumber);
-
-    err_payload = dataNumber % 3;
-    errs_adv_notify_send(&err_payload);
 }
 
 /**@brief Function for handling the Connection Parameters Module.
@@ -1148,16 +861,10 @@ static void conn_params_init(void)
  */
 static void application_timers_start(void)
 {
-    /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
-       ret_code_t err_code;
-       err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
-       APP_ERROR_CHECK(err_code); */
     uint32_t err_code;
 
     err_code = app_timer_start(m_app_timer_id, TIME_LEVEL_MEAS_INTERVAL, NULL);
     APP_ERROR_CHECK(err_code);
-    // err_code = app_timer_start(m_systick_id, TIME_SYSTICK_INTERVAL, NULL);
-    // APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for putting the chip into sleep mode.
@@ -1276,95 +983,6 @@ static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context)
     }
 }
 
-// /**@brief   Function for handling app_uart events.接收PC机的数据上传主机
-//  *
-//  * @details This function will receive a single character from the app_uart module and append it to
-//  *          a string. The string will be be sent over BLE when the last character received was a
-//  *          'new line' '\n' (hex 0x0A) or if the string has reached the maximum data length.
-//  */
-// /**@snippet [Handling the data received over UART] */
-// void uart_event_handle(app_uart_evt_t *p_event)
-// {
-//     static uint8_t data_array[BLE_NUS_MAX_DATA_LEN];
-//     static uint8_t index = 0;
-//     uint32_t err_code;
-
-//     switch (p_event->evt_type)
-//     {
-//     case APP_UART_DATA_READY: // 串口接收中断，PC发数据给从机
-//         UNUSED_VARIABLE(app_uart_get(&data_array[index]));
-//         index++;
-
-//         if ((data_array[index - 1] == '\n') ||
-//             (data_array[index - 1] == '\r') ||
-//             (index >= m_ble_nus_max_data_len)) // 244字节
-//         {
-//             if (index > 1)
-//             {
-//                 NRF_LOG_DEBUG("Ready to send data over BLE NUS");
-//                 NRF_LOG_HEXDUMP_DEBUG(data_array, index);
-
-//                 do
-//                 {
-//                     uint16_t length = (uint16_t)index;
-//                     err_code = ble_nus_data_send(&m_nus, data_array, &length, m_conn_handle); // 从机数据上传函数
-//                     if ((err_code != NRF_ERROR_INVALID_STATE) &&
-//                         (err_code != NRF_ERROR_RESOURCES) &&
-//                         (err_code != NRF_ERROR_NOT_FOUND))
-//                     {
-//                         APP_ERROR_CHECK(err_code);
-//                     }
-//                 } while (err_code == NRF_ERROR_RESOURCES);
-//             }
-
-//             index = 0;
-//         }
-//         break;
-
-//     case APP_UART_COMMUNICATION_ERROR:
-//         APP_ERROR_HANDLER(p_event->data.error_communication);
-//         break;
-
-//     case APP_UART_FIFO_ERROR:
-//         APP_ERROR_HANDLER(p_event->data.error_code);
-//         break;
-
-//     default:
-//         break;
-//     }
-// }
-// /**@snippet [Handling the data received over UART] */
-
-// /**@brief  Function for initializing the UART module.
-//  */
-// /**@snippet [UART Initialization] */
-// static void uart_init(void)
-// {
-//     uint32_t err_code;
-//     app_uart_comm_params_t const comm_params =
-//     {
-//         .rx_pin_no = RX_PIN_NUMBER,
-//         .tx_pin_no = TX_PIN_NUMBER,
-//         .rts_pin_no = RTS_PIN_NUMBER,
-//         .cts_pin_no = CTS_PIN_NUMBER,
-//         .flow_control = APP_UART_FLOW_CONTROL_DISABLED,
-//         .use_parity = false,
-// #if defined(UART_PRESENT)
-//         .baud_rate = NRF_UART_BAUDRATE_115200
-// #else
-//         .baud_rate = NRF_UARTE_BAUDRATE_115200
-// #endif
-//     };
-
-//     APP_UART_FIFO_INIT(&comm_params,
-//                        UART_RX_BUF_SIZE,
-//                        UART_TX_BUF_SIZE,
-//                        uart_event_handle,
-//                        APP_IRQ_PRIORITY_LOWEST,
-//                        err_code);
-//     APP_ERROR_CHECK(err_code);
-// }
-/**@snippet [UART Initialization] */
 /**@brief Function for initializing the BLE stack.
  *
  * @details Initializes the SoftDevice and the BLE event interrupt.
@@ -1595,14 +1213,13 @@ static void device_start(void)
 {
     ret_code_t err_code = NRF_SUCCESS;
 
-    NRF_LOG_INFO("miaomiao3 device started.");
+    NRF_LOG_INFO("diameter device started.");
     err_code = bsp_indication_set(BSP_INDICATE_USER_STATE_1);
     APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for application main entry.
  */
-uint8_t register_data[64] = {0};
 int main(void)
 {
     bool erase_bonds;
@@ -1626,35 +1243,27 @@ int main(void)
 
     fds_init_function();
     fds_tz_read();
-    fds_adv_data_read();
-    fds_dn_read();
-
     // Start execution.
     device_start();
     application_timers_start();
 
     advertising_start(erase_bonds);
 
-    // rfalAnalogConfigInitialize();
-    // if (rfalInitialize() != ERR_NONE)
-    // {
-    //     platformLog("RFAL initialization failed..\r\n");
-    // }
-    // else
-    // {
-    //     platformLog("RFAL initialization succeeded..\r\n");
-    // }
-    // for (int i = 0; i < 64; i++)
-    // {
-    //     st25r3911ReadRegister(ST25R3911_REG_IO_CONF1 + i, &register_data[i]);
-    // }
-
+    rfalAnalogConfigInitialize();
+    if (rfalInitialize() != ERR_NONE)
+    {
+        platformLog("RFAL initialization failed..\r\n");
+    }
+    else
+    {
+        platformLog("RFAL initialization succeeded..\r\n");
+    }
     // Enter main loop.
     for (;;)
     {
         idle_state_handle();
-        // rfalWorker();
-        // workCycle();
+        rfalWorker();
+        workCycle();
     }
 }
 

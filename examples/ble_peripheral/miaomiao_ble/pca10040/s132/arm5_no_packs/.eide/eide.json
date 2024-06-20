@@ -2,9 +2,7 @@
   "name": "miaomiao_ble",
   "type": "ARM",
   "dependenceList": [],
-  "srcDirs": [
-    ".eide/deps"
-  ],
+  "srcDirs": [],
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
@@ -606,6 +604,7 @@
       "custom_dep": {
         "name": "default",
         "incList": [
+          ".",
           "../../../config",
           "../../../../../../components",
           "../../../../../../components/ble/ble_advertising",
@@ -737,7 +736,6 @@
           "../config",
           ".cmsis/include",
           "RTE/_nrf52832_xxaa",
-          ".eide/deps",
           "../../../../../../../../../tool/Keil/Pack/NordicSemiconductor/nRF_DeviceFamilyPack/8.32.1/Device/Include",
           "../../../../../../components/libraries/bootloader/dfu",
           "../../../../../../components/libraries/bootloader",
@@ -751,7 +749,6 @@
           "../../../../../../components/ST25R3911/rfal/Inc"
         ],
         "libList": [],
-        "sourceDirList": [],
         "defineList": [
           "APP_TIMER_V2",
           "APP_TIMER_V2_RTC1_ENABLED",
@@ -990,5 +987,5 @@
       ]
     }
   },
-  "version": "3.3"
+  "version": "3.4"
 }

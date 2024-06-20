@@ -136,9 +136,10 @@ extern void IRQ_Disable(void);
 
 extern uint32_t get_sysTick(void);
 #define platformGetSysTick() get_sysTick() /*!< Get System Tick ( 1 tick = 1 ms)            */
-
-#define platformSpiSelect() /*platformGpioClear(ST25R391X_SS_PIN) !< SPI SS\CS: Chip|Slave Select                */
-#define platformSpiDeselect() /*platformGpioSet(ST25R391X_SS_PIN) !< SPI SS\CS: Chip|Slave Deselect              */
+extern void spi0_cs_enable(void);
+extern void spi0_cs_disable(void);
+#define platformSpiSelect() spi0_cs_enable()/*platformGpioClear(ST25R391X_SS_PIN) !< SPI SS\CS: Chip|Slave Select                */
+#define platformSpiDeselect() spi0_cs_disable()/*platformGpioSet(ST25R391X_SS_PIN) !< SPI SS\CS: Chip|Slave Deselect              */
 extern uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len);
 #define platformSpiTxRx(txBuf, rxBuf, len) nrf_spi_tx_rx(txBuf, rxBuf, len) /*!< SPI transceive                              */
 

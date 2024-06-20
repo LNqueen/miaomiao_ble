@@ -3,7 +3,7 @@
     "target": "nrf52832_xxaa",
     "toolchain": "AC5",
     "toolchainLocation": "D:\\tool\\keil\\ARM\\ARMCC",
-    "toolchainCfgFile": "c:\\Users\\10847\\.vscode\\extensions\\cl.eide-3.16.0\\res\\data\\models\\win32/arm.v5.model.json",
+    "toolchainCfgFile": "c:\\Users\\10847\\.vscode\\extensions\\cl.eide-3.18.0\\res\\data\\models\\win32/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 16,
@@ -13,6 +13,7 @@
     "ram": 56688,
     "rom": 368640,
     "incDirs": [
+        ".",
         "../../../config",
         "../../../../../../components",
         "../../../../../../components/ble/ble_advertising",
@@ -144,7 +145,6 @@
         "../config",
         ".cmsis/include",
         "RTE/_nrf52832_xxaa",
-        ".eide/deps",
         "../../../../../../../../../tool/Keil/Pack/NordicSemiconductor/nRF_DeviceFamilyPack/8.32.1/Device/Include",
         "../../../../../../components/libraries/bootloader/dfu",
         "../../../../../../components/libraries/bootloader",
@@ -291,7 +291,7 @@
         "afterBuildTasks": [
             {
                 "name": "axf to elf",
-                "command": "axf2elf -d \"D:\\tool\\keil\\ARM\\ARMCC\" -b \"${outDir}\\miaomiao_ble.bin\" -i \"${outDir}\\miaomiao_ble.axf\" -o \"${outDir}\\miaomiao_ble.elf\" > \"${outDir}\\axf2elf.log\""
+                "command": "axf2elf -d \"D:\\tool\\keil\\ARM\\ARMCC\" -i \"${outDir}\\miaomiao_ble.axf\" -o \"${outDir}\\miaomiao_ble.elf\" > \"${outDir}\\axf2elf.log\""
             }
         ],
         "global": {
@@ -345,7 +345,7 @@
     "sha": {
         "c/cpp-defines": "e3106be727e5a5961b008b88e4639771",
         "beforeBuildTasks": "d751713988987e9331980363e24189ce",
-        "afterBuildTasks": "adf5e7aa7bdd5a83f2441b9f4f5d081b",
+        "afterBuildTasks": "4e170a6f3faceb255b839fe50a7c8958",
         "global": "3ae75cac734e7a166338bea4b35ae2e0",
         "c/cpp-compiler": "f9f4c3f9bb011c675a08e5dfc3f15fa1",
         "asm-compiler": "55ae5b272029e76e92390604f936f0b1",

@@ -25,7 +25,8 @@
             "editor.tabSize": 4,
             "editor.autoIndent": "advanced"
         },
-        "editor.inlineSuggest.showToolbar": "onHover"
+        "editor.inlineSuggest.showToolbar": "onHover",
+        "commentTranslate.source": "intellsmi.comment-translate-ali.cloud"
     },
     "extensions": {
         "recommendations": [

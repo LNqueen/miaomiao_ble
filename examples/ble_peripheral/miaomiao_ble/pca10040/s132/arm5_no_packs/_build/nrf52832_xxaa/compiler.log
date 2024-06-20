@@ -1,8 +1,14 @@
 >>> cc
 
 
-
+".\..\..\..\nfcv_worker.c", line 335: Warning:  #177-D: variable "glucose"  was declared but never referenced
+          uint16_t glucose = (((uint16_t)sensor_d.fram[index + 25]) << 8) | sensor_d.fram[index + 24];
+                   ^
+".\..\..\..\nfcv_worker.c", line 357: Warning:  #177-D: variable "glucose"  was declared but never referenced
+          uint16_t glucose = (((uint16_t)sensor_d.fram[index + 25]) << 8) | sensor_d.fram[index + 24];
+                   ^
+.\..\..\..\nfcv_worker.c: 2 warnings, 0 errors
 
 >>> ld
 
-Program Size: Code=51848 RO-data=7844 RW-data=508 ZI-data=17932  
+Program Size: Code=62420 RO-data=8256 RW-data=556 ZI-data=21356  

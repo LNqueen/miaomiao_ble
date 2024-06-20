@@ -125,13 +125,9 @@ void st25r3911ReadRegister(uint8_t reg, uint8_t *val)
 void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t *val, uint8_t length)
 {
 #if !defined(ST25R391X_COM_SINGLETXRX)
-    uint8_t cmd = (reg | ST25R3911_READ_MODE);
-    uint8_t *tmp;
+    uint8_t buf[2];
 #endif /* !ST25R391X_COM_SINGLETXRX */
-
-    platformProtectST25R391xComm();
-    platformSpiSelect();
-
+    
 #ifdef ST25R391X_COM_SINGLETXRX
 
     ST_MEMSET(comBuf, 0x00, (ST25R3911_CMD_LEN + length));
@@ -141,20 +137,23 @@ void st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t *val, uint8_t length)
     ST_MEMCPY(val, &comBuf[ST25R3911_CMD_LEN], length);            /* Copy from local buf to output buffer and skip cmd byte */
 
 #else  /* ST25R391X_COM_SINGLETXRX */
-    tmp = (uint8_t *)malloc(sizeof(uint8_t) * (length + 1));
-    /* Since the result comes one byte later, let's first transmit the adddress with discarding the result */
-    // platformSpiTxRx(&cmd, NULL, ST25R3911_CMD_LEN);
-    // platformSpiTxRx(NULL, val, length);
-    platformSpiTxRx(&cmd, tmp, 2 + length);
-    for (int i = 0; i < length; i++)
+    for(int i = 0; i < length;i++)
     {
-        val[i] = tmp[i + 2];
-    }
-    free(tmp);
-#endif /* ST25R391X_COM_SINGLETXRX */
+        platformProtectST25R391xComm();
+        platformSpiSelect();
+        buf[0] = ((reg+i) | ST25R3911_READ_MODE);
+        buf[1] = 0;
 
-    platformSpiDeselect();
-    platformUnprotectST25R391xComm();
+        platformSpiTxRx(buf, buf, 2);
+        if (val != NULL)
+        {
+            val[i] = buf[1];
+        }
+        platformSpiDeselect();
+        platformUnprotectST25R391xComm();
+    }
+    
+#endif /* ST25R391X_COM_SINGLETXRX */
     return;
 }
 
