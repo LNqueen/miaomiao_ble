@@ -24,5 +24,5 @@ typedef enum
     E_FAILURE,
 } E_SENSOR_STA;
 
-void workCycle(void);
+void workCycle(uint8_t);
 #endif

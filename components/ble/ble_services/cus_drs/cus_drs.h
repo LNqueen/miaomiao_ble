@@ -27,12 +27,12 @@ extern "C"
 #define DRS_PROFILE_UUID_CHAR 0X0002
 
 // Length of Characteristic in bytes
-#define DRS_PROFILE_CHAR_LEN 344
+#define DRS_PROFILE_CHAR_LEN 172
 
 #define MAX_LIBRE_LIFE 14 * 24 * 60 * 60 // 14 days
-// #define LIBRE_DATA_LEN 144
-// #define REAL_TIME_DATA 0X02
-// #define HISTORY_DATA 0X01
+                                         // #define LIBRE_DATA_LEN 144
+                                         // #define REAL_TIME_DATA 0X02
+                                         // #define HISTORY_DATA 0X01
 
     typedef struct drsProfileService_s DrsProfile_t;
     typedef void (*drs_profile_evt_handler_t)(void);
@@ -92,9 +92,13 @@ extern "C"
     //     s_libredata data[LIBRE_DATA_LEN];
     // };
 
+    // struct drsLibrePayload_s
+    // {
+    //     uint8_t data[344];
+    // };
     struct drsLibrePayload_s
     {
-        uint8_t data[344];
+        uint8_t data[172];
     };
 
     uint32_t ble_drs_on_data_send(DrsProfile_t *p_drs, void *p_data, uint16_t length);

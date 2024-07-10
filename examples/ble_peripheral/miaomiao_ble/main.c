@@ -522,6 +522,7 @@ void fds_tz_read(void)
  */
 APP_TIMER_DEF(m_app_timer_id);
 #define TIME_LEVEL_MEAS_INTERVAL APP_TIMER_TICKS(1000)
+uint8_t scan_flag = 0;
 static void time_update(void)
 {
     static uint32_t pre_tick = 0;
@@ -536,6 +537,18 @@ static void time_update(void)
         {
             pre_tick = cur_TZ;
             adv_data_refresh();
+        }
+        else if (cur_TZ - pre_tick >= 59)
+        {
+            adv_data_refresh();
+        }
+        else if (cur_TZ - pre_tick >= 55)
+        {
+            scan_flag = 1;
+        }
+        else
+        {
+            scan_flag = 0;
         }
     }
 
@@ -788,22 +801,39 @@ static void services_init(void)
 // 5 min intervel
 static void adv_data_refresh(void)
 {
-    memcpy(libre_payload.data, sensor_d.fram, sizeof(sensor_d.fram));
-    drs_adv_libre_notify_send(&libre_payload);
-}
+    uint16_t half_fram_size = sizeof(sensor_d.fram) / 2;
+    static uint8_t send_step = 0;
 
-static void err_code_update(void)
-{
-    static uint16_t err_payload = 0, pre_err_code = 0;
-
-    err_payload = (sensor_state == 0) ? 1 : 0;
-
-    if (pre_err_code != err_payload)
+    if (send_step == 1)
     {
-        pre_err_code = err_payload;
-        errs_adv_notify_send(&err_payload);
+        send_step = 0;
+        memcpy(libre_payload.data, sensor_d.fram, half_fram_size);
+        drs_adv_libre_notify_send(&libre_payload);
+        NRF_LOG_INTERNAL_INFO("send_step:%d", send_step);
+        NRF_LOG_INTERNAL_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
+    }
+    else if (send_step == 0)
+    {
+        send_step = 1;
+        memcpy(libre_payload.data, sensor_d.fram + half_fram_size, half_fram_size);
+        drs_adv_libre_notify_send(&libre_payload);
+        NRF_LOG_INTERNAL_INFO("send_step:%d", send_step);
+        NRF_LOG_INTERNAL_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
     }
 }
+
+// static void err_code_update(void)
+//{
+//     static uint16_t err_payload = 0, pre_err_code = 0;
+
+//    err_payload = (sensor_state == 0) ? 1 : 0;
+
+//    if (pre_err_code != err_payload)
+//    {
+//        pre_err_code = err_payload;
+//        errs_adv_notify_send(&err_payload);
+//    }
+//}
 
 /**@brief Function for handling the Connection Parameters Module.
  *
@@ -1263,7 +1293,7 @@ int main(void)
     {
         idle_state_handle();
         rfalWorker();
-        workCycle();
+        workCycle(1);
     }
 }
 

@@ -2,12 +2,12 @@
     "name": "miaomiao_ble",
     "target": "nrf52832_xxaa",
     "toolchain": "AC5",
-    "toolchainLocation": "D:\\tool\\keil\\ARM\\ARMCC",
-    "toolchainCfgFile": "c:\\Users\\10847\\.vscode\\extensions\\cl.eide-3.18.0\\res\\data\\models\\win32/arm.v5.model.json",
+    "toolchainLocation": "D:\\program\\keil\\ARM\\ARMCC",
+    "toolchainCfgFile": "c:\\Users\\ZLoff\\.vscode\\extensions\\cl.eide-3.18.1\\res\\data\\models\\win32/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
-    "threadNum": 16,
-    "rootDir": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
+    "threadNum": 12,
+    "rootDir": "d:\\work_file\\github\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
     "dumpPath": "_build\\nrf52832_xxaa",
     "outDir": "_build\\nrf52832_xxaa",
     "ram": 56688,
@@ -155,7 +155,8 @@
         "../../../../../../components/ble/ble_services/cus_errs",
         "../../../../../../components/ble/ble_services/cus_tss",
         "../../../../../../components/ST25R3911",
-        "../../../../../../components/ST25R3911/rfal/Inc"
+        "../../../../../../components/ST25R3911/rfal/Inc",
+        ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1/Device/Include"
     ],
     "libDirs": [],
     "defines": [
@@ -284,14 +285,14 @@
         "RTE/Device/nRF52832_xxAA/system_nrf52.c"
     ],
     "sourceParams": {},
-    "sourceParamsMtime": 1699430166398.0522,
+    "sourceParamsMtime": 1719804581856.566,
     "options": {
         "version": 4,
         "beforeBuildTasks": [],
         "afterBuildTasks": [
             {
                 "name": "axf to elf",
-                "command": "axf2elf -d \"D:\\tool\\keil\\ARM\\ARMCC\" -i \"${outDir}\\miaomiao_ble.axf\" -o \"${outDir}\\miaomiao_ble.elf\" > \"${outDir}\\axf2elf.log\""
+                "command": "axf2elf -d \"D:\\program\\keil\\ARM\\ARMCC\" -i \"${outDir}\\miaomiao_ble.axf\" -o \"${outDir}\\miaomiao_ble.elf\" > \"${outDir}\\axf2elf.log\""
             }
         ],
         "global": {
@@ -320,35 +321,35 @@
             "rw-base": "0x20000000",
             "misc-controls": "--diag_suppress 6330",
             "link-scatter": [
-                "\"d:/work_file/github_project/miaomiao_ble/examples/ble_peripheral/miaomiao_ble/pca10040/s132/arm5_no_packs/_build/nrf52832_xxaa/miaomiao_ble.sct\""
+                "\"d:/work_file/github/miaomiao_ble/examples/ble_peripheral/miaomiao_ble/pca10040/s132/arm5_no_packs/_build/nrf52832_xxaa/miaomiao_ble.sct\""
             ]
         }
     },
     "env": {
-        "workspaceFolder": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
+        "workspaceFolder": "d:\\work_file\\github\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
         "workspaceFolderBasename": "arm5_no_packs",
-        "OutDir": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa",
+        "OutDir": "d:\\work_file\\github\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa",
         "OutDirRoot": "_build",
         "OutDirBase": "_build\\nrf52832_xxaa",
         "ProjectName": "miaomiao_ble",
         "ConfigName": "nrf52832_xxaa",
-        "ProjectRoot": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
-        "ExecutableName": "d:\\work_file\\github_project\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa\\miaomiao_ble",
+        "ProjectRoot": "d:\\work_file\\github\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
+        "ExecutableName": "d:\\work_file\\github\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa\\miaomiao_ble",
         "SYS_Platform": "win32",
         "SYS_DirSep": "\\",
         "SYS_DirSeparator": "\\",
         "SYS_PathSep": ";",
         "SYS_PathSeparator": ";",
         "SYS_EOL": "\r\n",
-        "ToolchainRoot": "D:\\tool\\keil\\ARM\\ARMCC"
+        "ToolchainRoot": "D:\\program\\keil\\ARM\\ARMCC"
     },
     "sha": {
         "c/cpp-defines": "e3106be727e5a5961b008b88e4639771",
         "beforeBuildTasks": "d751713988987e9331980363e24189ce",
-        "afterBuildTasks": "4e170a6f3faceb255b839fe50a7c8958",
+        "afterBuildTasks": "a2132b9855d4b70dac1e0d19031b4a61",
         "global": "3ae75cac734e7a166338bea4b35ae2e0",
         "c/cpp-compiler": "f9f4c3f9bb011c675a08e5dfc3f15fa1",
         "asm-compiler": "55ae5b272029e76e92390604f936f0b1",
-        "linker": "374a5198e1f5dc98f2658b2b3599e717"
+        "linker": "7b926ba0b8c56a43e714173cd08aaf7e"
     }
 }

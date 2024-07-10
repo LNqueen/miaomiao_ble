@@ -746,7 +746,8 @@
           "../../../../../../components/ble/ble_services/cus_errs",
           "../../../../../../components/ble/ble_services/cus_tss",
           "../../../../../../components/ST25R3911",
-          "../../../../../../components/ST25R3911/rfal/Inc"
+          "../../../../../../components/ST25R3911/rfal/Inc",
+          ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1/Device/Include"
         ],
         "libList": [],
         "defineList": [

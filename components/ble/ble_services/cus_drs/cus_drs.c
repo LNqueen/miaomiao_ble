@@ -66,11 +66,11 @@ uint32_t ble_drs_on_data_send(DrsProfile_t *p_drs, void *p_data, uint16_t length
 }
 uint8_t drs_adv_libre_notify_send(DrsLibrePayload_s *data)
 {
-    static uint8_t tmp[344];
+    static uint8_t tmp[172];
 
-    memcpy(tmp, data, 344);
+    memcpy(tmp, data, 172);
 
-    ble_drs_on_data_send(&m_drs, (void *)tmp, 344);
+    ble_drs_on_data_send(&m_drs, (void *)tmp, 172);
 
     return 0;
 }

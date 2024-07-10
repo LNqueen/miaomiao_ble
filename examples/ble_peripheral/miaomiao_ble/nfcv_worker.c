@@ -7,9 +7,11 @@
 #include "cus_drs.h"
 
 #define FIELD_OFF 0
-#define POLL_ACTIVE_TECH 1
-#define POLL_PASSIV_TECH 2
-#define WAIT_WAKEUP 3
+#define DELAY_FIELD 1
+#define POLL_ACTIVE_TECH 2
+#define DELAY_ACTIVE 3
+#define POLL_PASSIV_TECH 4
+#define DELAY_PASSIV 5
 
 /* macro to cycle through states */
 #define NEXT_STATE()                 \
@@ -19,9 +21,11 @@
     }
 
 static uint8_t stateArray[] = {FIELD_OFF,
+                               DELAY_FIELD,
                                POLL_ACTIVE_TECH,
+                               DELAY_ACTIVE,
                                POLL_PASSIV_TECH,
-                               WAIT_WAKEUP};
+                               DELAY_PASSIV};
 
 static uint8_t NFCID3[] = {0x01, 0xFE, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A};
 static uint8_t GB[] = {0x46, 0x66, 0x6d, 0x01, 0x01, 0x11, 0x02, 0x02, 0x07, 0x80, 0x03, 0x02, 0x00, 0x03, 0x04, 0x01, 0x32, 0x07, 0x01, 0x03};
@@ -36,7 +40,6 @@ static union
 char hexStr[4][128];
 uint8_t hexStrIdx = 0;
 
-static bool doWakeUp = false;     /*!< by default do not perform Wake-Up               */
 static uint8_t state = FIELD_OFF; /*!< Actual state, starting with RF field turned off */
 
 bool PollNFCV(void);
@@ -71,51 +74,66 @@ static char *hex2Str(unsigned char *data, size_t dataLen)
     return hexStr[idx];
 }
 
-void workCycle(void)
+void workCycle(uint8_t scan_flag)
 {
     bool found = false;
+    static uint16_t cnt = 0;
 
     switch (stateArray[state])
     {
     case FIELD_OFF:
         rfalFieldOff();
         rfalWakeUpModeStop();
-        platformDelay(300);
-
-        /* If WakeUp is to be executed, enable Wake-Up mode */
-        if (doWakeUp)
+        if (scan_flag == 1)
         {
-            platformLog("Going to Wakeup mode.\r\n");
-
-            rfalWakeUpModeStart(NULL);
-            state = WAIT_WAKEUP;
-            break;
+            NEXT_STATE();
         }
-        NEXT_STATE();
+        break;
+
+    case DELAY_FIELD:
+        if (++cnt > 300)
+        {
+            cnt = 0;
+            NEXT_STATE();
+        }
+        else
+        {
+            platformDelay(1);
+        }
         break;
 
     case POLL_ACTIVE_TECH:
         demoPollAP2P();
-        platformDelay(40);
         NEXT_STATE();
+        break;
+
+    case DELAY_ACTIVE:
+        if (++cnt > 40)
+        {
+            cnt = 0;
+            NEXT_STATE();
+        }
+        else
+        {
+            platformDelay(1);
+        }
         break;
 
     case POLL_PASSIV_TECH:
         found |= PollNFCV();
 
-        platformDelay(300);
-        state = FIELD_OFF;
+        NEXT_STATE();
         break;
 
-    case WAIT_WAKEUP:
-
-        /* Check if Wake-Up Mode has been awaked */
-        if (rfalWakeUpModeHasWoke())
+    case DELAY_PASSIV:
+        if (++cnt > 300)
         {
-            platformLog("start poll\r\n");
-            /* If awake, go directly to Poll */
-            rfalWakeUpModeStop();
-            state = POLL_ACTIVE_TECH;
+            cnt = 0;
+            state = FIELD_OFF;
+        }
+        else
+        {
+            platformDelay(1);
         }
         break;
 
