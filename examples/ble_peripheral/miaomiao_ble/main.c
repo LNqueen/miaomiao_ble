@@ -523,6 +523,7 @@ void fds_tz_read(void)
 APP_TIMER_DEF(m_app_timer_id);
 #define TIME_LEVEL_MEAS_INTERVAL APP_TIMER_TICKS(1000)
 uint8_t scan_flag = 0;
+uint8_t libre_send_step = 0;
 static void time_update(void)
 {
     static uint32_t pre_tick = 0;
@@ -531,26 +532,31 @@ static void time_update(void)
 
     cur_TZ++;
 
-    if (sensor_state == 1)
+    if (cur_TZ - pre_tick >= 60)
     {
-        if (cur_TZ - pre_tick >= 60)
-        {
-            pre_tick = cur_TZ;
-            adv_data_refresh();
-        }
-        else if (cur_TZ - pre_tick >= 59)
+        pre_tick = cur_TZ;
+        if (sensor_state == 1)
         {
             adv_data_refresh();
-        }
-        else if (cur_TZ - pre_tick >= 55)
-        {
-            scan_flag = 1;
-        }
-        else
-        {
-            scan_flag = 0;
         }
     }
+    else if (cur_TZ - pre_tick >= 59)
+    {
+        if (sensor_state == 1)
+        {
+            adv_data_refresh();
+        }
+    }
+    else if (cur_TZ - pre_tick >= 55)
+    {
+        scan_flag = 1;
+        libre_send_step = 0;
+    }
+    else
+    {
+        scan_flag = 0;
+    }
+    NRF_LOG_INFO("scan_flag:%d", scan_flag);
 
     // NVIC_SystemReset();
     switch (charge_status)
@@ -802,23 +808,19 @@ static void services_init(void)
 static void adv_data_refresh(void)
 {
     uint16_t half_fram_size = sizeof(sensor_d.fram) / 2;
-    static uint8_t send_step = 0;
 
-    if (send_step == 1)
+    if (libre_send_step == 0)
     {
-        send_step = 0;
+        libre_send_step = 1;
         memcpy(libre_payload.data, sensor_d.fram, half_fram_size);
         drs_adv_libre_notify_send(&libre_payload);
-        NRF_LOG_INTERNAL_INFO("send_step:%d", send_step);
-        NRF_LOG_INTERNAL_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
+        NRF_LOG_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
     }
-    else if (send_step == 0)
+    else if (libre_send_step == 1)
     {
-        send_step = 1;
         memcpy(libre_payload.data, sensor_d.fram + half_fram_size, half_fram_size);
         drs_adv_libre_notify_send(&libre_payload);
-        NRF_LOG_INTERNAL_INFO("send_step:%d", send_step);
-        NRF_LOG_INTERNAL_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
+        NRF_LOG_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
     }
 }
 
@@ -1293,7 +1295,7 @@ int main(void)
     {
         idle_state_handle();
         rfalWorker();
-        workCycle(1);
+        workCycle(scan_flag);
     }
 }
 
