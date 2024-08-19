@@ -86,10 +86,12 @@
 #include "cus_drs.h"
 #include "cus_errs.h"
 #include "cus_tss.h"
+#include "cus_bat.h"
 #include "nrf_drv_clock.h"
 #include "nrf_drv_rtc.h"
 #include "nrf_drv_spi.h"
 #include "nrf_drv_gpiote.h"
+#include "nrf_drv_saadc.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -172,9 +174,11 @@ uint8_t fds_gc_flag = 0;
 DrsLibrePayload_s libre_payload;
 extern S_sensor_t sensor_d;
 extern uint8_t sensor_state;
+uint16_t battery_value = 0;
 
 static void advertising_start(bool erase_bonds);
 static void adv_data_refresh(void);
+static void bat_data_refresh(void);
 
 static void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
@@ -276,6 +280,32 @@ uint8_t nrf_spi_tx_rx(const uint8_t *txData, uint8_t *rxData, uint8_t len)
     }
 
     return 0;
+}
+
+void saadc_callback(nrf_drv_saadc_evt_t const *p_event)
+{
+}
+
+void saadc_init(void)
+{
+    ret_code_t err_code;
+    nrf_saadc_channel_config_t channel_config = NRF_DRV_SAADC_DEFAULT_CHANNEL_CONFIG_SE(NRF_SAADC_INPUT_AIN4);
+
+    err_code = nrf_drv_saadc_init(NULL, saadc_callback);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = nrf_drv_saadc_channel_init(0, &channel_config);
+    APP_ERROR_CHECK(err_code);
+}
+
+void saadc_start(void)
+{
+    nrf_saadc_value_t saadc_val;
+    float value = 0;
+    nrf_drv_saadc_sample_convert(0, &saadc_val);
+
+    value = (saadc_val * 3.6 / 1024) * 3;
+    battery_value = (uint16_t)(value * 1000); // mv
 }
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -539,6 +569,7 @@ static void time_update(void)
         {
             adv_data_refresh();
         }
+        bat_data_refresh();
     }
     else if (cur_TZ - pre_tick >= 59)
     {
@@ -761,6 +792,10 @@ static void tss_profile_evt_handler(uint32_t timestamp)
     NRF_LOG_INFO("TSS: %d", timestamp);
 }
 
+static void bat_profile_evt_handler()
+{
+}
+
 /**@brief Function for initializing services that will be used by the application.
  */
 static void services_init(void)
@@ -772,6 +807,7 @@ static void services_init(void)
     DrsProfileCallback_t drs_init = {0};
     ErrsProfileCallback_t errs_init = {0};
     TssProfileCallback_t tss_init = {0};
+    BatProfileCallback_t bat_init = {0};
 
     // Initialize Queued Write Module.
     qwr_init.error_handler = nrf_qwr_error_handler;
@@ -794,6 +830,11 @@ static void services_init(void)
     err_code = tss_profile_init(&tss_init);
     APP_ERROR_CHECK(err_code);
 
+    // create bat profile
+    bat_init.bat_evt_handler = bat_profile_evt_handler;
+    err_code = bat_profile_init(&bat_init);
+    APP_ERROR_CHECK(err_code);
+
 #if (BLE_DFU_ENABLED == 1)
     err_code = ble_dfu_buttonless_async_svci_init();
     APP_ERROR_CHECK(err_code);
@@ -804,24 +845,61 @@ static void services_init(void)
     APP_ERROR_CHECK(err_code);
 #endif
 }
+
+unsigned short DO_CRC16(unsigned char *ptr, int len)
+{
+    unsigned short crc = 0xFFFF;
+    for (int i = 0; i < len; i++)
+    {
+        crc ^= ptr[i];
+        for (int j = 0; j < 8; j++)
+        {
+            if (crc & 0x0001)
+            {
+                crc = (crc >> 1) ^ 0xA001;
+            }
+            else
+            {
+                crc >>= 1;
+            }
+        }
+    }
+    return ((crc >> 8) | (crc << 8));
+}
+
 // 5 min intervel
 static void adv_data_refresh(void)
 {
     uint16_t half_fram_size = sizeof(sensor_d.fram) / 2;
+    uint16_t checkcrc = 0;
 
     if (libre_send_step == 0)
     {
-        libre_send_step = 1;
-        memcpy(libre_payload.data, sensor_d.fram, half_fram_size);
+        memcpy(libre_payload.data + 1, sensor_d.fram, half_fram_size);
+        libre_payload.data[0] = 0x00;
+        checkcrc = DO_CRC16(libre_payload.data, half_fram_size + 1);
+        libre_payload.data[half_fram_size + 1] = (checkcrc >> 8) & 0xFF;
+        libre_payload.data[half_fram_size + 2] = (checkcrc >> 0) & 0xFF;
         drs_adv_libre_notify_send(&libre_payload);
-        NRF_LOG_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
+        NRF_LOG_INFO("step: %d, checkcrc:%04x", libre_send_step, checkcrc);
+        libre_send_step = 1;
     }
     else if (libre_send_step == 1)
     {
-        memcpy(libre_payload.data, sensor_d.fram + half_fram_size, half_fram_size);
+        memcpy(libre_payload.data + 1, sensor_d.fram + half_fram_size, half_fram_size);
+        libre_payload.data[0] = 0x01;
+        checkcrc = DO_CRC16(libre_payload.data, half_fram_size + 1);
+        libre_payload.data[half_fram_size + 1] = (checkcrc >> 8) & 0xFF;
+        libre_payload.data[half_fram_size + 2] = (checkcrc >> 0) & 0xFF;
         drs_adv_libre_notify_send(&libre_payload);
-        NRF_LOG_INFO("libre_payload[0]:0x%02x", libre_payload.data[0]);
+        NRF_LOG_INFO("step: %d, checkcrc:%04x", libre_send_step, checkcrc);
     }
+}
+
+static void bat_data_refresh(void)
+{
+    saadc_start();
+    bat_adv_notify_send(&battery_value); // mv
 }
 
 // static void err_code_update(void)
@@ -1280,6 +1358,8 @@ int main(void)
     application_timers_start();
 
     advertising_start(erase_bonds);
+
+    saadc_init();
 
     rfalAnalogConfigInitialize();
     if (rfalInitialize() != ERR_NONE)

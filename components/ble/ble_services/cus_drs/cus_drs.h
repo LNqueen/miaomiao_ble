@@ -27,7 +27,7 @@ extern "C"
 #define DRS_PROFILE_UUID_CHAR 0X0002
 
 // Length of Characteristic in bytes
-#define DRS_PROFILE_CHAR_LEN 172
+#define DRS_PROFILE_CHAR_LEN 175 // HEADER * 1 + DATA * 172 + CRC * 2
 
 #define MAX_LIBRE_LIFE 14 * 24 * 60 * 60 // 14 days
                                          // #define LIBRE_DATA_LEN 144
@@ -98,7 +98,7 @@ extern "C"
     // };
     struct drsLibrePayload_s
     {
-        uint8_t data[172];
+        uint8_t data[175];
     };
 
     uint32_t ble_drs_on_data_send(DrsProfile_t *p_drs, void *p_data, uint16_t length);

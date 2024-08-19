@@ -516,6 +516,12 @@
 #define BLE_TSS_ENABLED 1
 #endif
 
+// <q> BLE_BAT_ENALBED   - ble_bat - Battery Power Report Service
+
+#ifndef BLE_BAT_ENALBED
+#define BLE_BAT_ENALBED 1
+#endif
+
 // </h>
 //==========================================================
 
@@ -3120,7 +3126,7 @@
 // <e> NRFX_SAADC_ENABLED - nrfx_saadc - SAADC peripheral driver
 //==========================================================
 #ifndef NRFX_SAADC_ENABLED
-#define NRFX_SAADC_ENABLED 0
+#define NRFX_SAADC_ENABLED 1
 #endif
 // <o> NRFX_SAADC_CONFIG_RESOLUTION  - Resolution
 
@@ -5079,7 +5085,7 @@
 // <e> SAADC_ENABLED - nrf_drv_saadc - SAADC peripheral driver - legacy layer
 //==========================================================
 #ifndef SAADC_ENABLED
-#define SAADC_ENABLED 0
+#define SAADC_ENABLED 1
 #endif
 // <o> SAADC_CONFIG_RESOLUTION  - Resolution
 
@@ -11227,6 +11233,13 @@
 
 #ifndef BLE_TSS_BLE_OBSERVER_PRIO
 #define BLE_TSS_BLE_OBSERVER_PRIO 2
+#endif
+
+// <o> BLE_BAT_BLE_OBSERVER_PRIO
+// <i> Priority with Battery Power Report Service.
+
+#ifndef BLE_BAT_BLE_OBSERVER_PRIO
+#define BLE_BAT_BLE_OBSERVER_PRIO 2
 #endif
 
 // <o> BSP_BTN_BLE_OBSERVER_PRIO

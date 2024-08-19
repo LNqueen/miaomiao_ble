@@ -198,6 +198,9 @@
           },
           {
             "path": "../../../../../../components/ble/ble_services/cus_tss/cus_tss.c"
+          },
+          {
+            "path": "../../../../../../components/ble/ble_services/cus_bat/cus_bat.c"
           }
         ],
         "folders": []
@@ -261,6 +264,9 @@
           },
           {
             "path": "../../../../../../modules/nrfx/soc/nrfx_atomic.c"
+          },
+          {
+            "path": "../../../../../../modules/nrfx/drivers/src/nrfx_saadc.c"
           }
         ],
         "folders": []
@@ -747,7 +753,8 @@
           "../../../../../../components/ble/ble_services/cus_tss",
           "../../../../../../components/ST25R3911",
           "../../../../../../components/ST25R3911/rfal/Inc",
-          ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1/Device/Include"
+          ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1/Device/Include",
+          "../../../../../../components/ble/ble_services/cus_bat"
         ],
         "libList": [],
         "defineList": [

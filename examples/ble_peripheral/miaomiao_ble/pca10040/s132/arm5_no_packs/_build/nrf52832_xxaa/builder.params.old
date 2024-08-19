@@ -3,7 +3,7 @@
     "target": "nrf52832_xxaa",
     "toolchain": "AC5",
     "toolchainLocation": "D:\\program\\keil\\ARM\\ARMCC",
-    "toolchainCfgFile": "c:\\Users\\ZLoff\\.vscode\\extensions\\cl.eide-3.18.1\\res\\data\\models\\win32/arm.v5.model.json",
+    "toolchainCfgFile": "c:\\Users\\ZLoff\\.vscode\\extensions\\cl.eide-3.18.2\\res\\data\\models\\win32/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 12,
@@ -156,7 +156,8 @@
         "../../../../../../components/ble/ble_services/cus_tss",
         "../../../../../../components/ST25R3911",
         "../../../../../../components/ST25R3911/rfal/Inc",
-        ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1/Device/Include"
+        ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1/Device/Include",
+        "../../../../../../components/ble/ble_services/cus_bat"
     ],
     "libDirs": [],
     "defines": [
@@ -198,6 +199,7 @@
         "../../../../../../components/ble/ble_services/ble_dfu/ble_dfu.c",
         "../../../../../../components/ble/ble_services/ble_dfu/ble_dfu_bonded.c",
         "../../../../../../components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c",
+        "../../../../../../components/ble/ble_services/cus_bat/cus_bat.c",
         "../../../../../../components/ble/ble_services/cus_drs/cus_drs.c",
         "../../../../../../components/ble/ble_services/cus_errs/cus_errs.c",
         "../../../../../../components/ble/ble_services/cus_tss/cus_tss.c",
@@ -273,6 +275,7 @@
         "../../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_power_clock.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_rtc.c",
+        "../../../../../../modules/nrfx/drivers/src/nrfx_saadc.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_spi.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_spim.c",
         "../../../../../../modules/nrfx/drivers/src/nrfx_uart.c",

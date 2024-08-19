@@ -19,6 +19,7 @@
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\components\ble\ble_services\ble_dfu\ble_dfu.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\components\ble\ble_services\ble_dfu\ble_dfu_bonded.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\components\ble\ble_services\ble_dfu\ble_dfu_unbonded.o
+.\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\components\ble\ble_services\cus_bat\cus_bat.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\components\ble\ble_services\cus_drs\cus_drs.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\components\ble\ble_services\cus_errs\cus_errs.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\components\ble\ble_services\cus_tss\cus_tss.o
@@ -94,6 +95,7 @@
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_gpiote.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_power_clock.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_rtc.o
+.\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_saadc.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_spi.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_spim.o
 .\_build\nrf52832_xxaa\.obj\__\__\__\__\__\__\modules\nrfx\drivers\src\nrfx_uart.o
