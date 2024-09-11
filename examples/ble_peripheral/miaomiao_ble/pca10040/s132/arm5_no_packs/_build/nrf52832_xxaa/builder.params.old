@@ -3,7 +3,7 @@
     "target": "nrf52832_xxaa",
     "toolchain": "AC5",
     "toolchainLocation": "D:\\program\\keil\\ARM\\ARMCC",
-    "toolchainCfgFile": "c:\\Users\\ZLoff\\.vscode\\extensions\\cl.eide-3.18.2\\res\\data\\models\\win32/arm.v5.model.json",
+    "toolchainCfgFile": "c:\\Users\\ZLoff\\.vscode\\extensions\\cl.eide-3.19.6\\res\\data\\models\\win32/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 12,
@@ -288,7 +288,7 @@
         "RTE/Device/nRF52832_xxAA/system_nrf52.c"
     ],
     "sourceParams": {},
-    "sourceParamsMtime": 1719804581856.566,
+    "sourceParamsMtime": 1725276936905.2292,
     "options": {
         "version": 4,
         "beforeBuildTasks": [],
@@ -338,6 +338,8 @@
         "ConfigName": "nrf52832_xxaa",
         "ProjectRoot": "d:\\work_file\\github\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs",
         "ExecutableName": "d:\\work_file\\github\\miaomiao_ble\\examples\\ble_peripheral\\miaomiao_ble\\pca10040\\s132\\arm5_no_packs\\_build\\nrf52832_xxaa\\miaomiao_ble",
+        "ChipPackDir": ".pack/NordicSemiconductor/nRF_DeviceFamilyPack.8.32.1",
+        "ChipName": "nRF52832_xxAA",
         "SYS_Platform": "win32",
         "SYS_DirSep": "\\",
         "SYS_DirSeparator": "\\",

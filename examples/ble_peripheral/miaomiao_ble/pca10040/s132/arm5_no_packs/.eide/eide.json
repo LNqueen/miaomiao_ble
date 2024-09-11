@@ -774,6 +774,35 @@
           "NRF_DFU_TRANSPORT_BLE=1",
           "BL_SETTINGS_ACCESS_ONLY"
         ]
+      },
+      "builderOptions": {
+        "AC5": {
+          "version": 4,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "use-microLIB": true,
+            "output-debug-info": "enable"
+          },
+          "c/cpp-compiler": {
+            "optimization": "level-3",
+            "one-elf-section-per-function": true,
+            "c99-mode": true,
+            "C_FLAGS": "--reduce_paths",
+            "CXX_FLAGS": "--reduce_paths",
+            "warnings": "unspecified"
+          },
+          "asm-compiler": {
+            "misc-controls": "--cpreproc_opts=-DAPP_TIMER_V2,-DAPP_TIMER_V2_RTC1_ENABLED,-DBOARD_PCA10040,-DCONFIG_GPIO_AS_PINRESET,-DFLOAT_ABI_HARD,-DNRF52,-DNRF52832_XXAA,-DNRF52_PAN_74,-DNRF_SD_BLE_API_VERSION=7,-DS132,-DSOFTDEVICE_PRESENT,-D__HEAP_SIZE=8192,-D__STACK_SIZE=8192"
+          },
+          "linker": {
+            "output-format": "elf",
+            "xo-base": "",
+            "ro-base": "0x00000000",
+            "rw-base": "0x20000000",
+            "misc-controls": "--diag_suppress 6330"
+          }
+        }
       }
     },
     "flash_s132_nrf52_7.0.1_softdevice": {
@@ -906,7 +935,6 @@
       "toolchain": "AC5",
       "custom_dep": {
         "name": "default",
-        "sourceDirList": [],
         "libList": [],
         "incList": [
           "../../../config",
@@ -992,8 +1020,37 @@
         "<virtual_root>/nRF_SoftDevice/nrf_sdh_soc.c",
         "<virtual_root>/::CMSIS",
         "<virtual_root>/::Device"
-      ]
+      ],
+      "builderOptions": {
+        "AC5": {
+          "version": 4,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "use-microLIB": true,
+            "output-debug-info": "enable"
+          },
+          "c/cpp-compiler": {
+            "optimization": "level-3",
+            "one-elf-section-per-function": true,
+            "c99-mode": true,
+            "C_FLAGS": "--reduce_paths",
+            "CXX_FLAGS": "--reduce_paths",
+            "warnings": "unspecified"
+          },
+          "asm-compiler": {
+            "misc-controls": "--cpreproc_opts=-D__HEAP_SIZE=8192,-D__STACK_SIZE=8192"
+          },
+          "linker": {
+            "output-format": "elf",
+            "xo-base": "",
+            "ro-base": "0x00000000",
+            "rw-base": "0x20000000",
+            "misc-controls": "--diag_suppress 6330"
+          }
+        }
+      }
     }
   },
-  "version": "3.4"
+  "version": "3.5"
 }

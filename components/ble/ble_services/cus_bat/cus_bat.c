@@ -21,7 +21,7 @@ static void on_write(BatProfile_t *p_drs, ble_evt_t const *pBleEvent)
         (p_drs->bat_evt_handler != NULL))
     {
         p_drs->bat_evt_handler();
-        NRF_LOG_INFO("ERRS characteristic written");
+        NRF_LOG_INFO("BAT characteristic written");
     }
 }
 

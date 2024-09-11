@@ -349,7 +349,7 @@ void libre_data_parsing(void)
         {
             index += 96;
         }
-        uint16_t glucose = (((uint16_t)sensor_d.fram[index + 25]) << 8) | sensor_d.fram[index + 24];
+        // uint16_t glucose = (((uint16_t)sensor_d.fram[index + 25]) << 8) | sensor_d.fram[index + 24];
 
         // if (i == 0)
         // {
@@ -371,7 +371,7 @@ void libre_data_parsing(void)
         {
             index += 192;
         }
-        uint16_t glucose = (((uint16_t)sensor_d.fram[index + 25]) << 8) | sensor_d.fram[index + 24];
+        // uint16_t glucose = (((uint16_t)sensor_d.fram[index + 25]) << 8) | sensor_d.fram[index + 24];
         //        his_payload.data[i].bloodGluose = glucose;
         //        his_payload.data[i].timeStamp = cur_TZ - 900 * i;
         //        his_payload.data[i].libreLife = libreLife + 900 * i;
