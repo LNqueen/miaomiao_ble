@@ -11,7 +11,8 @@ typedef struct Sensor
     unsigned char oldNextHistory;
     unsigned char minutesSinceStart; // minutes since start of sensor
     unsigned short oldMinutesSinceStart;
-    unsigned char fram[344]; // buffer for Freestyle Libre FRAM data
+    unsigned char patchinfo[16]; // patch information
+    unsigned char fram[344];     // buffer for Freestyle Libre FRAM data
 } S_sensor_t;
 
 typedef enum

@@ -384,6 +384,8 @@ void libre_data_parsing(void)
     //    his_payload.totalDataNumber = 32;
 }
 
+/*******************************************************************************/
+
 static uint8_t read_flag = 0;
 uint32_t last_count = 0;
 extern uint32_t my_systick;
@@ -412,7 +414,7 @@ bool PollNFCV(void)
         sensor_state = 1;
         if (read_flag == 0)
         {
-            read_flag = 1;
+
             last_count = my_systick;
             /******************************************************/
             /* NFC-V card found                                   */
@@ -428,6 +430,21 @@ bool PollNFCV(void)
             memcpy(sensor_d.oldUid, sensor_d.uid, sizeof(sensor_d.uid));
             memcpy(sensor_d.uid, nfcvDev.InvRes.UID, sizeof(nfcvDev.InvRes.UID));
 
+            err = rfalNfvReadPatchInfo(flagDefault, NULL, rxBuf, sizeof(rxBuf), &rcvLen); /* read patch info */
+            platformLog("errcode: %d\r\n", err);
+            if (err == ERR_NONE)
+            {
+                read_flag = 1;
+                for (int i = 0; i < rcvLen; i++)
+                {
+                    sensor_d.patchinfo[i] = rxBuf[i];
+                }
+                platformLog("patchinfo: %s\r\n", hex2Str(sensor_d.patchinfo, rcvLen));
+            }
+        }
+        else if (read_flag == 1)
+        {
+            read_flag = 2;
             if (err == ERR_NONE)
             {
                 for (int i = 0; i < 43; i++)
