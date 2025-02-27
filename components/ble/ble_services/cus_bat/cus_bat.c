@@ -65,8 +65,8 @@ uint32_t ble_bat_on_data_send(BatProfile_t *p_bat, void *p_data, uint16_t length
 uint8_t bat_adv_notify_send(uint16_t *bat_number)
 {
     uint8_t tmp[2];
-    tmp[0] = *bat_number << 0 & 0xFF;
-    tmp[1] = *bat_number << 8 & 0xFF;
+    tmp[0] = *bat_number >> 0 & 0xFF;
+    tmp[1] = *bat_number >> 8 & 0xFF;
     return ble_bat_on_data_send(&m_bat, (void *)tmp, 2);
 }
 /*********************************************************************

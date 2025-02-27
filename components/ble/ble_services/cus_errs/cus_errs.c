@@ -65,8 +65,8 @@ uint32_t ble_errs_on_data_send(ErrsProfile_t *p_errs, void *p_data, uint16_t len
 uint8_t errs_adv_notify_send(uint16_t *err_number)
 {
     uint8_t tmp[2];
-    tmp[0] = *err_number << 0 & 0xFF;
-    tmp[1] = *err_number << 8 & 0xFF;
+    tmp[0] = *err_number >> 0 & 0xFF;
+    tmp[1] = *err_number >> 8 & 0xFF;
     return ble_errs_on_data_send(&m_errs, (void *)tmp, 2);
 }
 /*********************************************************************

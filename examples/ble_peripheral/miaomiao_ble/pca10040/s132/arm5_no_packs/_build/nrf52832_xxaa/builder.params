@@ -3,7 +3,7 @@
     "target": "nrf52832_xxaa",
     "toolchain": "AC5",
     "toolchainLocation": "D:\\program\\keil\\ARM\\ARMCC",
-    "toolchainCfgFile": "c:\\Users\\ZLoff\\.vscode\\extensions\\cl.eide-3.19.6\\res\\data\\models\\win32/arm.v5.model.json",
+    "toolchainCfgFile": "c:\\Users\\ZLoff\\.cursor\\extensions\\cl.eide-3.21.1\\res\\data\\models\\win32/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 12,
@@ -288,7 +288,6 @@
         "RTE/Device/nRF52832_xxAA/system_nrf52.c"
     ],
     "sourceParams": {},
-    "sourceParamsMtime": 1725276936905.2292,
     "options": {
         "version": 4,
         "beforeBuildTasks": [],
@@ -346,15 +345,10 @@
         "SYS_PathSep": ";",
         "SYS_PathSeparator": ";",
         "SYS_EOL": "\r\n",
+        "EIDE_BUILDER_DIR": "c:\\Users\\ZLoff\\.cursor\\extensions\\cl.eide-3.21.1\\res\\tools\\win32\\unify_builder",
+        "EIDE_BINARIES_VER": "12.0.1",
+        "EIDE_MSYS": "C:\\Users\\ZLoff\\.eide\\bin\\builder\\msys\\bin",
         "ToolchainRoot": "D:\\program\\keil\\ARM\\ARMCC"
     },
-    "sha": {
-        "c/cpp-defines": "e3106be727e5a5961b008b88e4639771",
-        "beforeBuildTasks": "d751713988987e9331980363e24189ce",
-        "afterBuildTasks": "a2132b9855d4b70dac1e0d19031b4a61",
-        "global": "3ae75cac734e7a166338bea4b35ae2e0",
-        "c/cpp-compiler": "f9f4c3f9bb011c675a08e5dfc3f15fa1",
-        "asm-compiler": "55ae5b272029e76e92390604f936f0b1",
-        "linker": "7b926ba0b8c56a43e714173cd08aaf7e"
-    }
+    "sysPaths": []
 }
